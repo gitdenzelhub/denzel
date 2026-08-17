@@ -66,10 +66,10 @@ Columns: caption | label | link
 
 heading: Selected Content
 
-- Add a caption | Instagram · Reel | https://www.instagram.com/reel/DQUPkB7CGaE/
-- Add a caption | Instagram · Reel | https://www.instagram.com/reel/DUOSUa3D220/
-- Add a caption | Instagram · Reel | https://www.instagram.com/reel/DYM27NWINr8/
-- Add a caption | Instagram · Reel | https://www.instagram.com/reel/DPq_5Jej-_n/
+- Lifestyle reel | Instagram · Reel | https://www.instagram.com/reel/DQUPkB7CGaE/
+- Workout reel | Instagram · Reel | https://www.instagram.com/reel/DUOSUa3D220/
+- Wellness reel | Instagram · Reel | https://www.instagram.com/reel/DYM27NWINr8/
+- Running Vlog reel | Instagram · Reel | https://www.instagram.com/reel/DPq_5Jej-_n/
 
 
 ## Brands
