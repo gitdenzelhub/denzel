@@ -11,6 +11,8 @@ Rules:
 
 ## Meta
 
+photo: assets/ C:\Users\denze\OneDrive\Documents\denzel hoka.jpeg
+
 title: Denzel — Hybrid Athlete & Creator
 description: Media kit for Denzel — faith and performance driven hybrid athlete creating gym, fitness and lifestyle content in the UAE.
 share-text: Faith and performance driven hybrid athlete documenting the real journey.
@@ -105,14 +107,13 @@ Tags listed under the paragraph.
 - Hybrid performance
 - Lifestyle
 - Faith & discipline
-- Short-form video
 
 
 ## Contact
 
 kicker: Work with me
 cta: Let’s
-cta-emphasis: build.
+cta-emphasis: create.
 
 email: denzel23jo@gmail.com
 phone: +971 50 917 9493
