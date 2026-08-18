@@ -208,6 +208,12 @@ img { max-width: 100%; display: block; }
 .gsap .hero-field { opacity: 0; }
 .gsap .hero-field.is-in { opacity: 1; }
 
+/* Mobile-only portrait that fills the empty fold above the headline.
+   Hidden on tablet/desktop so the particle field stays in charge. */
+.hero-mobile-photo {
+  display: none;
+}
+
 .hero-inner { position: relative; z-index: 1; }
 
 /* Soft scrim so the copy keeps its contrast where the particle field
@@ -321,6 +327,40 @@ img { max-width: 100%; display: block; }
 
 @media (min-width: 48em) {
   .hero-scroll { display: flex; }
+}
+
+@media (max-width: 47.99em) {
+  .hero-field { display: none; }
+
+  .hero-mobile-photo {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 0;
+    width: 100vw;
+    max-width: none;
+    height: 68%;
+    transform: translateX(-50%);
+    object-fit: cover;
+    object-position: center 22%;
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 10, 10, 0.22) 0%,
+      rgba(10, 10, 10, 0.08) 38%,
+      rgba(10, 10, 10, 0.58) 64%,
+      var(--bg) 84%
+    );
+  }
 }
 
 /* ── Section rhythm ──────────────────────────────────────── */
@@ -503,21 +543,38 @@ section[id] { scroll-margin-top: clamp(5.5rem, 8vw, 7rem); }
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: clamp(6.5rem, 11vw, 10rem);
+  min-height: clamp(7.5rem, 13vw, 11.5rem);
   padding: clamp(1.25rem, 3vw, 2.5rem);
   background: var(--bg);
   transition: background-color 0.45s var(--ease);
 }
 
-/* Flatten every logo to one weight so mismatched source files
-   still read as a single consistent wall. */
+/* Linked cells: the hit area fills the tile, padding moves onto the <a>. */
+.logo:has(.logo-link) { padding: 0; }
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: inherit;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  color: inherit;
+  text-decoration: none;
+}
+.logo-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -6px;
+}
+
+/* Brand-colored marks on the dark wall. Stacked / circular lockups need
+   more height than the old thin wordmarks. */
 .logo img {
-  max-height: clamp(1.9rem, 3.2vw, 3rem);
+  max-height: clamp(3.4rem, 6.4vw, 5.4rem);
   max-width: 100%;
   width: auto;
   object-fit: contain;
-  filter: brightness(0) invert(1);
-  opacity: 0.62;
+  opacity: 0.92;
   transition: opacity 0.45s var(--ease), transform 0.6s var(--ease);
 }
 
@@ -536,9 +593,9 @@ section[id] { scroll-margin-top: clamp(5.5rem, 8vw, 7rem); }
 @media (hover: hover) {
   .logo-wall:hover .logo img,
   .logo-wall:hover .logo-fallback { opacity: 0.28; }
-  .logo:hover { background: rgba(245, 240, 235, 0.03); }
-  .logo:hover img { opacity: 1; transform: scale(1.05); }
-  .logo:hover .logo-fallback { opacity: 1; color: var(--accent); }
+  .logo-wall:hover .logo:hover { background: rgba(245, 240, 235, 0.03); }
+  .logo-wall:hover .logo:hover img { opacity: 1; transform: scale(1.05); }
+  .logo-wall:hover .logo:hover .logo-fallback { opacity: 1; color: var(--accent); }
 }
 
 /* ── About ───────────────────────────────────────────────── */
