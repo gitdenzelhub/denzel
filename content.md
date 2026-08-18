@@ -40,6 +40,8 @@ eyebrow: Hybrid Athlete · Creator · UAE
 headline: Documenting the | real journey.
 intro: Faith and performance driven. Becoming better in public, and helping young athletes take their first steps alongside me.
 scroll: Scroll
+mobile-photo: assets/front-page-mobile.jpeg
+mobile-photo-alt: Denzel at Etihad Arena, wearing a HOKA race shirt
 
 
 ## Numbers
@@ -76,18 +78,19 @@ heading: Selected Content
 
 ## Brands
 
-Columns: name | logo file
+Columns: name | logo file | url
 Logo files live in `assets/logos/`. If the file is missing, or you leave the
 second column blank, the brand name is shown as a wordmark instead.
+The third column is the destination opened when the logo is clicked.
 
 heading: Worked With
 
-- HOKA              | hoka.svg
-- Fitness Nation    | fitness-nation.svg
-- Ritz Fitness Club | ritz-fitness-club.svg
-- OMA               | oma.svg
-- LFG               | lfg.svg
-- Fast&Up           | fast-and-up.svg
+- HOKA              | hoka.png                 | https://www.hoka.com/
+- Fitness Nation    | fitness-nation.png       | https://fitnessnation.ae/
+- Ritz Fitness Club | ritz-fitness-club.png    | https://ritzfitnessclub.com/
+- OMA               | oma.png                  | https://tasteoma.com/
+- LFG               | lfg.png                  | https://www.instagram.com/lfgdubai/
+- Fast&Up           | fast-and-up.png          | https://uae.fastandup.com/
 
 
 ## About

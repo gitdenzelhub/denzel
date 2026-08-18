@@ -141,22 +141,32 @@ def render_reels(rows):
 def render_logos(rows):
     out = []
     for row in rows:
-        name, logo = col(row, 0), col(row, 1)
+        name, logo, url = col(row, 0), col(row, 1), col(row, 2)
+        classes = "logo reveal" + ("" if logo else " is-empty")
+
+        pieces = []
         if logo:
-            out.append(
-                '        <li class="logo reveal">\n'
-                f'          <img src="assets/logos/{attr(logo)}" alt="{attr(name)}"\n'
-                "               onerror=\"this.closest('.logo').classList.add('is-empty'); this.remove();\">\n"
-                f'          <span class="logo-fallback">{esc(name)}</span>\n'
-                "        </li>"
+            pieces.append(
+                f'<img src="assets/logos/{attr(logo)}" alt="{attr(name)}"\n'
+                "                 onerror=\"this.closest('.logo').classList.add('is-empty'); this.remove();\">"
             )
-        else:
-            # No file given, so go straight to the wordmark.
-            out.append(
-                '        <li class="logo reveal is-empty">\n'
-                f'          <span class="logo-fallback">{esc(name)}</span>\n'
-                "        </li>"
+        pieces.append(f'<span class="logo-fallback">{esc(name)}</span>')
+        inner = "\n            ".join(pieces)
+
+        if url:
+            inner = (
+                f'<a class="logo-link" href="{attr(url)}" '
+                f'target="_blank" rel="noopener noreferrer" '
+                f'aria-label="{attr(name)}">\n'
+                f"            {inner}\n"
+                "          </a>"
             )
+
+        out.append(
+            f'        <li class="{classes}">\n'
+            f"          {inner}\n"
+            "        </li>"
+        )
     return "\n".join(out)
 
 
@@ -217,6 +227,12 @@ def build():
         "HERO_HEADLINE": attr(headline),
         "HERO_INTRO": esc(field(s, "hero", "intro")),
         "HERO_SCROLL": esc(field(s, "hero", "scroll", "Scroll")),
+        "HERO_MOBILE_PHOTO": attr(
+            field(s, "hero", "mobile-photo", "assets/front-page-mobile.jpeg")
+        ),
+        "HERO_MOBILE_PHOTO_ALT": attr(
+            field(s, "hero", "mobile-photo-alt", name)
+        ),
 
         "NUMBERS_HEADING": esc(field(s, "numbers", "heading")),
         "NUMBERS_TAG": esc(field(s, "numbers", "tag")),

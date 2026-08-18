@@ -322,6 +322,10 @@
     }
 
     function resize() {
+      if (window.getComputedStyle(canvas).display === "none") {
+        pause();
+        return;
+      }
       var rect = canvas.getBoundingClientRect();
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       w = rect.width;
@@ -445,13 +449,21 @@
       }
     }
 
-    function play() { if (!raf && !reduced) raf = requestAnimationFrame(frame); }
+    function fieldVisible() {
+      return window.getComputedStyle(canvas).display !== "none";
+    }
+
+    function play() {
+      if (!fieldVisible()) return;
+      if (!raf && !reduced) raf = requestAnimationFrame(frame);
+    }
     function pause() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
 
     resize();
     window.addEventListener("resize", function () {
       pause();
       resize();
+      if (!fieldVisible()) return;
       if (reduced) drawStill(); else play();
     });
 
