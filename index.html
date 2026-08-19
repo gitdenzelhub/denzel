@@ -3,22 +3,25 @@
   GENERATED FILE — do not edit index.html by hand.
   Edit content.md (text) or template.html (markup), then run: python build.py
 -->
-<html lang="en">
+<html lang="en" data-palette="night" data-compare="on">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Denzel — Hybrid Athlete &amp; Creator</title>
-<meta name="description" content="Media kit for Denzel — faith and performance driven hybrid athlete creating gym, fitness and lifestyle content in the UAE.">
-<meta name="theme-color" content="#0a0a0a">
-<meta name="color-scheme" content="dark">
+<title>Denzel | Hybrid athlete and creator, Dubai</title>
+<meta name="description" content="Media kit for Denzel (@dnzlszn). HOKA Middle East athlete in Dubai making gym, running, race day and lifestyle content. 5.75% engagement across 1,890 followers.">
+<meta name="theme-color" content="#0a0e17">
 
-<meta property="og:title" content="Denzel — Hybrid Athlete &amp; Creator">
-<meta property="og:description" content="Faith and performance driven hybrid athlete documenting the real journey.">
+<meta property="og:title" content="Denzel | Hybrid athlete and creator, Dubai">
+<meta property="og:description" content="Hybrid athlete and creator in Dubai. 1,890 people, 5.75% engagement, six brand partners.">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://haziq-exe.github.io/dnzl-szn/assets/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -39,204 +42,487 @@
 
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <header class="site-header container">
-    <a class="site-name link" href="#top">Denzel</a>
+  <!-- Course profile: fills as you scroll, with a tick at every checkpoint. -->
+  <div class="course" aria-hidden="true">
+    <span class="course-fill"></span>
+    <span class="course-ticks"></span>
+  </div>
+
+  <header class="site-header">
+    <a class="site-name" href="#top">
+      <span class="site-name-block">DNZL SZN</span>
+    </a>
     <nav class="site-nav" aria-label="Primary">
-      <a class="link" href="#numbers">Numbers</a>
-      <a class="link" href="#content">Content</a>
-      <a class="link" href="#brands">Brands</a>
-      <a class="link" href="#contact">Contact</a>
+      <a class="nav-link mono" href="#numbers">Numbers</a>
+      <a class="nav-link mono" href="#value">Why me</a>
+      <a class="nav-link mono" href="#pillars">Pillars</a>
+      <a class="nav-link mono" href="#work">Work</a>
+      <a class="nav-link mono" href="#partners">Partners</a>
+      <a class="nav-link mono" href="#contact">Contact</a>
     </nav>
+    <a class="header-cta" href="#contact">Work with me</a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span>
+    </button>
   </header>
+
+  <nav id="mobile-menu" class="mobile-menu" aria-label="Mobile">
+      <a class="mobile-link" href="#numbers">Numbers</a>
+      <a class="mobile-link" href="#value">Why me</a>
+      <a class="mobile-link" href="#pillars">Pillars</a>
+      <a class="mobile-link" href="#work">Work</a>
+      <a class="mobile-link" href="#partners">Partners</a>
+      <a class="mobile-link" href="#contact">Contact</a>
+    <a class="mobile-menu-cta" href="#contact">Work with me</a>
+  </nav>
 
   <main id="main">
 
     <!-- ─────────────────────────────  HERO  ───────────────────────────── -->
-    <section id="top" class="hero container">
-      <img class="hero-mobile-photo" src="assets/front-page-mobile.jpeg"
-           alt="Denzel at Etihad Arena, wearing a HOKA race shirt"
-           width="1200" height="1600" decoding="async">
-      <canvas class="hero-field" aria-hidden="true"></canvas>
+    <section id="top" class="hero" data-checkpoint="Start">
+      <div class="lanes" aria-hidden="true"></div>
 
-      <!-- Wrapper exists so the scroll parallax has something of its own to
-           move. Parallaxing the children directly would fight the intro
-           timeline for the same properties. -->
-      <div class="hero-inner">
-        <p class="hero-eyebrow label">Hybrid Athlete · Creator · UAE</p>
+      <div class="hero-grid container">
 
-        <h1 class="hero-title">
-          <span class="sr-only">Documenting the real journey.</span>
-          <span class="hero-headline" aria-hidden="true" data-split="Documenting the | real journey."></span>
+        <p class="hero-eyebrow mono">Hybrid athlete · Creator · Dubai, UAE</p>
+
+        <h1 class="hero-stack">
+          <span class="sr-only">DNZL SZN. Hybrid athlete · Creator · Dubai, UAE</span>
+          <span class="hero-line" aria-hidden="true"><span class="hero-line-inner">DNZL</span></span>
+          <span class="hero-line" aria-hidden="true"><span class="hero-line-inner">SZN</span></span>
         </h1>
 
-        <div class="hero-foot">
-          <p class="hero-intro">Faith and performance driven. Becoming better in public, and helping young athletes take their first steps alongside me.</p>
-          <p class="hero-scroll label">Scroll <span class="hero-scroll-arrow">↓</span></p>
+        <aside class="hero-definition" aria-label="Definition">
+          <p class="hero-def-term"><em>szn</em> <span class="mono">/ˈsiː.zən/ noun</span></p>
+          <p class="hero-def-text">Season. As in: on. As in: mine, all year.</p>
+        </aside>
+
+        <p class="hero-intro">I am a HOKA Middle East athlete based in Dubai. Faith first, performance driven. I document the real work: the early alarms, the racks, the start lines. My people come with me for every rep.</p>
+
+        <!-- Athlete credential. Lanyard and card share one rig so they
+             swing together under the pointer. -->
+        <div class="pass-scene">
+          <div class="pass-rig">
+           <div class="pass-swing">
+            <div class="pass-lanyard" aria-hidden="true">
+              <span class="pass-lanyard-strap"></span>
+              <span class="pass-lanyard-clip"></span>
+            </div>
+            <div class="pass" role="img" aria-label="Athlete pass for DNZL SZN, bib 23616, HOKA MIDDLE EAST, Dubai UAE">
+              <div class="pass-tilt">
+                <div class="pass-head mono" aria-hidden="true">
+                  <span>ATHLETE&nbsp;PASS</span>
+                  <span class="pass-head-dot">●&nbsp;LIVE</span>
+                </div>
+                <figure class="pass-photo" aria-hidden="true">
+                  <img src="assets/front-page-mobile.jpeg" alt="" width="1200" height="1600" decoding="async">
+                </figure>
+                <div class="pass-meta" aria-hidden="true">
+                  <p class="pass-name">DENZEL</p>
+                  <p class="pass-role mono">HYBRID ATHLETE / CREATOR</p>
+                  <div class="pass-row mono">
+                    <span class="pass-bib">BIB 23616</span>
+                    <span>HOKA MIDDLE EAST</span>
+                  </div>
+                  <div class="pass-row mono">
+                    <span>UAE MEDIA LICENSED</span>
+                    <span>DXB&nbsp;·&nbsp;UAE</span>
+                  </div>
+                </div>
+                <div class="pass-barcode" aria-hidden="true"></div>
+                <p class="pass-caption mono" aria-hidden="true">DEKA · Etihad Arena, Abu Dhabi</p>
+              </div>
+            </div>
+           </div>
+          </div>
         </div>
+
+        <p class="hero-scroll mono">Scroll <span class="hero-scroll-arrow">↓</span></p>
+      </div>
+
+      <!-- Marquee band along the hero's lower edge. The phrase list is
+           rendered four times so the -50% loop stays seamless even on
+           ultrawide screens. -->
+      <div class="ticker" aria-hidden="true">
+        <div class="ticker-track">
+          <span class="ticker-item">Hybrid athlete<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Content creator<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Dubai · UAE<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Faith first<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Gym &amp; training<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Race day<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Becoming better in public<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Hybrid athlete<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Content creator<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Dubai · UAE<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Faith first<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Gym &amp; training<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Race day<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Becoming better in public<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Hybrid athlete<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Content creator<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Dubai · UAE<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Faith first<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Gym &amp; training<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Race day<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Becoming better in public<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Hybrid athlete<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Content creator<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Dubai · UAE<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Faith first<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Gym &amp; training<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Race day<span class="ticker-sep">✦</span></span>
+          <span class="ticker-item">Becoming better in public<span class="ticker-sep">✦</span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────────  MANIFESTO  ────────────────────────── -->
+    <section class="manifesto" id="manifesto" data-checkpoint="The idea">
+      <div class="container">
+        <p class="section-kicker mono manifesto-kicker">The idea</p>
+        <div class="manifesto-lines">
+          <p class="manifesto-line"><span class="manifesto-line-inner">Most fitness content</span></p>
+          <p class="manifesto-line"><span class="manifesto-line-inner">sells a highlight reel.</span></p>
+          <p class="manifesto-line"><span class="manifesto-line-inner">I show the whole season.</span></p>
+          <p class="manifesto-line"><span class="manifesto-line-inner">The misses, the mornings,</span></p>
+          <p class="manifesto-line"><span class="manifesto-line-inner">the meaning.</span></p>
+        </div>
+        <p class="manifesto-soul serif">Discipline is just faith with a training plan.</p>
       </div>
     </section>
 
     <!-- ────────────────────────────  NUMBERS  ─────────────────────────── -->
-    <section id="numbers" class="numbers container">
-      <div class="section-head">
-        <h2 class="label">The Numbers</h2>
-        <p class="label">Media Kit</p>
+    <section id="numbers" class="numbers" data-checkpoint="Numbers">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title"><span class="section-index mono">01</span>The numbers</h2>
+          <p class="section-tag mono">@dnzlszn on Instagram</p>
+        </header>
+
+        <!-- Headline stat with benchmark comparison. -->
+        <div class="er reveal">
+          <div class="er-figure">
+            <p class="er-value">
+              <span data-count="5.75" data-decimals="2">5.75</span><span class="er-unit">%</span>
+            </p>
+            <p class="er-label mono">Engagement rate</p>
+          </div>
+          <div class="er-context">
+            <p class="er-note">1,890 people follow me and they actually show up. They reply, they save, they ask what I am wearing and what I am taking. That is the number I care about.</p>
+            <div class="benchmark" role="img" aria-label="Engagement compared: Instagram influencer average 1.85 percent, Nano creator average (1–10k) 2.19 percent, Strong performance 3.00 percent, Me 5.75 percent">
+              <div class="bench-row">
+                <span class="bench-label mono">Instagram influencer average</span>
+                <span class="bench-track"><span class="bench-fill" style="--w: 32.17%"></span></span>
+                <span class="bench-value mono">1.85%</span>
+              </div>
+              <div class="bench-row">
+                <span class="bench-label mono">Nano creator average (1–10k)</span>
+                <span class="bench-track"><span class="bench-fill" style="--w: 38.09%"></span></span>
+                <span class="bench-value mono">2.19%</span>
+              </div>
+              <div class="bench-row">
+                <span class="bench-label mono">Strong performance</span>
+                <span class="bench-track"><span class="bench-fill" style="--w: 52.17%"></span></span>
+                <span class="bench-value mono">3.00%</span>
+              </div>
+              <div class="bench-row is-me">
+                <span class="bench-label mono">Me</span>
+                <span class="bench-track"><span class="bench-fill" style="--w: 100.0%"></span></span>
+                <span class="bench-value mono">5.75%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <dl class="stat-grid">
+        <div class="stat reveal">
+          <dt class="stat-label mono">Followers</dt>
+          <dd class="stat-value"><span data-count="1890" data-decimals="0" data-commas>1,890</span></dd>
+          <dd class="stat-note">Every one of them chose to be here. No bots, no buys.</dd>
+        </div>
+        <div class="stat reveal">
+          <dt class="stat-label mono">Brand partners</dt>
+          <dd class="stat-value"><span data-count="6" data-decimals="0">6</span></dd>
+          <dd class="stat-note">From global (HOKA) to homegrown (LFG Dubai)</dd>
+        </div>
+        <div class="stat reveal">
+          <dt class="stat-label mono">Core audience</dt>
+          <dd class="stat-value">18<span class="stat-unit">–</span>34</dd>
+          <dd class="stat-note">Where my content lands hardest</dd>
+        </div>
+        <div class="stat reveal">
+          <dt class="stat-label mono">Home</dt>
+          <dd class="stat-value">UAE</dd>
+          <dd class="stat-note">Dubai based, racing across the Emirates</dd>
+        </div>
+        </dl>
+
+        <div class="split reveal">
+          <h3 class="mono split-head">Audience split</h3>
+          <div class="split-bar" role="img" aria-label="Audience gender split: 57.3 percent male, 42.7 percent female">
+            <span class="split-fill" style="--male: 57.3%"></span>
+          </div>
+          <ul class="split-key mono">
+            <li><span class="split-dot split-dot--male"></span>Male · 57.3%</li>
+            <li><span class="split-dot split-dot--female"></span>Female · 42.7%</li>
+          </ul>
+        </div>
       </div>
+    </section>
 
-      <dl class="stat-grid">
-        <div class="stat reveal">
-          <dt class="stat-value"><span data-count="5.75" data-decimals="2">5.75</span><span class="stat-unit">%</span></dt>
-          <dd class="stat-label">Engagement rate</dd>
-        </div>
-        <div class="stat reveal">
-          <dt class="stat-value"><span data-count="1890" data-decimals="0" data-commas>1,890</span></dt>
-          <dd class="stat-label">Followers</dd>
-        </div>
-        <div class="stat reveal">
-          <dt class="stat-value">18<span class="stat-unit">–</span>34</dt>
-          <dd class="stat-label">Core audience age</dd>
-        </div>
-        <div class="stat reveal">
-          <dt class="stat-value">UAE</dt>
-          <dd class="stat-label">Primary market</dd>
-        </div>
-      </dl>
+    <!-- ─────────────────────────────  VALUE  ──────────────────────────── -->
+    <section id="value" class="value" data-checkpoint="Why me">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title"><span class="section-index mono">02</span>Why small wins</h2>
+          <p class="section-tag mono">What you get</p>
+        </header>
 
-      <div class="split reveal">
-        <h3 class="label split-head">Audience split</h3>
-        <div class="split-bar" role="img" aria-label="Audience gender split: 57.3 percent male, 42.7 percent female">
-          <span class="split-fill" style="--male: 57.3%"></span>
-        </div>
-        <ul class="split-key">
-          <li><span class="split-dot split-dot--male"></span>Male · 57.3%</li>
-          <li><span class="split-dot split-dot--female"></span>Female · 42.7%</li>
+        <ul class="value-list">
+          <li class="value-row reveal">
+            <p class="value-figure">3×</p>
+            <div class="value-copy">
+              <p class="value-text">My audience engages at roughly three times the Instagram average. When I post about something, people reply and ask me where to get it.</p>
+              <p class="value-support mono">5.75% engagement against a 1.85% platform average</p>
+            </div>
+          </li>
+          <li class="value-row reveal">
+            <p class="value-figure">100%</p>
+            <div class="value-copy">
+              <p class="value-text">Everything I post, I use. I train in it, race in it or eat it. If it does not hold up in a session, it does not go on my feed.</p>
+              <p class="value-support mono">HOKA, Fast&amp;Up, Fitness Nation, Ritz, OMA, LFG</p>
+            </div>
+          </li>
+          <li class="value-row reveal">
+            <p class="value-figure">UAE</p>
+            <div class="value-copy">
+              <p class="value-text">I am here on the ground. Store launches, race weekends, gym openings: I can be in the room, not sending content from another timezone.</p>
+              <p class="value-support mono">Dubai based. DEKA at Etihad Arena, Abu Dhabi</p>
+            </div>
+          </li>
         </ul>
       </div>
     </section>
 
-    <!-- ────────────────────────────  CONTENT  ─────────────────────────── -->
-    <section id="content" class="content container">
-      <div class="section-head">
-        <h2 class="label">Selected Content</h2>
-        <p class="label">(04)</p>
-      </div>
+    <!-- ────────────────────────────  PILLARS  ─────────────────────────── -->
+    <section id="pillars" class="pillars" data-checkpoint="Pillars">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title"><span class="section-index mono">03</span>The pillars</h2>
+          <p class="section-tag mono">Four lanes, one lens</p>
+        </header>
 
-      <ul class="reel-list">
-        <li class="reel-row">
-          <a class="reel-link" href="https://www.instagram.com/reel/DQUPkB7CGaE/" target="_blank" rel="noopener noreferrer">
-            <span class="reel-index">01</span>
-            <h3 class="reel-title">Lifestyle reel</h3>
-            <p class="reel-meta">Instagram · Reel</p>
-            <span class="reel-cta">Watch</span>
-            <span class="reel-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="reel-row">
-          <a class="reel-link" href="https://www.instagram.com/reel/DUOSUa3D220/" target="_blank" rel="noopener noreferrer">
-            <span class="reel-index">02</span>
-            <h3 class="reel-title">Workout reel</h3>
-            <p class="reel-meta">Instagram · Reel</p>
-            <span class="reel-cta">Watch</span>
-            <span class="reel-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="reel-row">
-          <a class="reel-link" href="https://www.instagram.com/reel/DYM27NWINr8/" target="_blank" rel="noopener noreferrer">
-            <span class="reel-index">03</span>
-            <h3 class="reel-title">Wellness reel</h3>
-            <p class="reel-meta">Instagram · Reel</p>
-            <span class="reel-cta">Watch</span>
-            <span class="reel-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="reel-row">
-          <a class="reel-link" href="https://www.instagram.com/reel/DPq_5Jej-_n/" target="_blank" rel="noopener noreferrer">
-            <span class="reel-index">04</span>
-            <h3 class="reel-title">Running Vlog reel</h3>
-            <p class="reel-meta">Instagram · Reel</p>
-            <span class="reel-cta">Watch</span>
-            <span class="reel-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-      </ul>
+        <ol class="pillar-grid">
+          <li class="pillar reveal" data-arabic="٠١">
+            <p class="pillar-index mono">01</p>
+            <h3 class="pillar-name">Train</h3>
+            <p class="pillar-desc">Gym and hybrid performance. Strength work, engine work, and the programming behind both.</p>
+          </li>
+          <li class="pillar reveal" data-arabic="٠٢">
+            <p class="pillar-index mono">02</p>
+            <h3 class="pillar-name">Race</h3>
+            <p class="pillar-desc">Start lines and finish lines. DEKA at Etihad Arena, road races, and everything in between.</p>
+          </li>
+          <li class="pillar reveal" data-arabic="٠٣">
+            <p class="pillar-index mono">03</p>
+            <h3 class="pillar-name">Live</h3>
+            <p class="pillar-desc">Life in the UAE. Food, recovery, the city, and the in-between moments people actually relate to.</p>
+          </li>
+          <li class="pillar reveal" data-arabic="٠٤">
+            <p class="pillar-index mono">04</p>
+            <h3 class="pillar-name">Believe</h3>
+            <p class="pillar-desc">Faith and discipline. The why behind the work, told without preaching.</p>
+          </li>
+        </ol>
+      </div>
     </section>
 
-    <!-- ─────────────────────────────  BRANDS  ─────────────────────────── -->
-    <section id="brands" class="brands container">
-      <div class="section-head">
-        <h2 class="label">Worked With</h2>
-        <p class="label">(06)</p>
-      </div>
+    <!-- ─────────────────────────────  WORK  ───────────────────────────── -->
+    <section id="work" class="work" data-checkpoint="Work">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title"><span class="section-index mono">04</span>Selected work</h2>
+          <p class="section-tag mono">Tap any row to watch</p>
+        </header>
 
-      <ul class="logo-wall">
+        <ul class="reel-list">
+          <li class="reel-row">
+            <a class="reel-link" href="https://www.instagram.com/reel/DQUPkB7CGaE/" target="_blank" rel="noopener noreferrer">
+              <span class="reel-index mono">01</span>
+              <h3 class="reel-title">Lifestyle reel</h3>
+              <span class="reel-pill mono">Live</span>
+              <span class="reel-cta mono">Watch</span>
+              <span class="reel-arrow" aria-hidden="true">↗</span>
+            </a>
+          </li>
+          <li class="reel-row">
+            <a class="reel-link" href="https://www.instagram.com/reel/DUOSUa3D220/" target="_blank" rel="noopener noreferrer">
+              <span class="reel-index mono">02</span>
+              <h3 class="reel-title">Workout reel</h3>
+              <span class="reel-pill mono">Train</span>
+              <span class="reel-cta mono">Watch</span>
+              <span class="reel-arrow" aria-hidden="true">↗</span>
+            </a>
+          </li>
+          <li class="reel-row">
+            <a class="reel-link" href="https://www.instagram.com/reel/DYM27NWINr8/" target="_blank" rel="noopener noreferrer">
+              <span class="reel-index mono">03</span>
+              <h3 class="reel-title">Wellness reel</h3>
+              <span class="reel-pill mono">Live</span>
+              <span class="reel-cta mono">Watch</span>
+              <span class="reel-arrow" aria-hidden="true">↗</span>
+            </a>
+          </li>
+          <li class="reel-row">
+            <a class="reel-link" href="https://www.instagram.com/reel/DPq_5Jej-_n/" target="_blank" rel="noopener noreferrer">
+              <span class="reel-index mono">04</span>
+              <h3 class="reel-title">Running vlog reel</h3>
+              <span class="reel-pill mono">Race</span>
+              <span class="reel-cta mono">Watch</span>
+              <span class="reel-arrow" aria-hidden="true">↗</span>
+            </a>
+          </li>
+        </ul>
+
+        <a class="work-more mono" href="https://www.instagram.com/dnzlszn/reels/" target="_blank" rel="noopener noreferrer">
+          Full grid → @dnzlszn
+        </a>
+      </div>
+    </section>
+
+    <!-- ────────────────────────────  PARTNERS  ────────────────────────── -->
+    <section id="partners" class="partners" data-checkpoint="Partners">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title"><span class="section-index mono">05</span>Worked with</h2>
+          <p class="section-tag mono">Global and homegrown</p>
+        </header>
+
+        <ul class="logo-wall">
         <li class="logo reveal">
           <a class="logo-link" href="https://www.hoka.com/" target="_blank" rel="noopener noreferrer" aria-label="HOKA">
-            <img src="assets/logos/hoka.png" alt="HOKA"
+            <img src="assets/logos/hoka.png" alt="HOKA" loading="lazy"
                  onerror="this.closest('.logo').classList.add('is-empty'); this.remove();">
             <span class="logo-fallback">HOKA</span>
           </a>
         </li>
         <li class="logo reveal">
           <a class="logo-link" href="https://fitnessnation.ae/" target="_blank" rel="noopener noreferrer" aria-label="Fitness Nation">
-            <img src="assets/logos/fitness-nation.png" alt="Fitness Nation"
+            <img src="assets/logos/fitness-nation.png" alt="Fitness Nation" loading="lazy"
                  onerror="this.closest('.logo').classList.add('is-empty'); this.remove();">
             <span class="logo-fallback">Fitness Nation</span>
           </a>
         </li>
         <li class="logo reveal">
           <a class="logo-link" href="https://ritzfitnessclub.com/" target="_blank" rel="noopener noreferrer" aria-label="Ritz Fitness Club">
-            <img src="assets/logos/ritz-fitness-club.png" alt="Ritz Fitness Club"
+            <img src="assets/logos/ritz-fitness-club.png" alt="Ritz Fitness Club" loading="lazy"
                  onerror="this.closest('.logo').classList.add('is-empty'); this.remove();">
             <span class="logo-fallback">Ritz Fitness Club</span>
           </a>
         </li>
         <li class="logo reveal">
           <a class="logo-link" href="https://tasteoma.com/" target="_blank" rel="noopener noreferrer" aria-label="OMA">
-            <img src="assets/logos/oma.png" alt="OMA"
+            <img src="assets/logos/oma.png" alt="OMA" loading="lazy"
                  onerror="this.closest('.logo').classList.add('is-empty'); this.remove();">
             <span class="logo-fallback">OMA</span>
           </a>
         </li>
         <li class="logo reveal">
           <a class="logo-link" href="https://www.instagram.com/lfgdubai/" target="_blank" rel="noopener noreferrer" aria-label="LFG">
-            <img src="assets/logos/lfg.png" alt="LFG"
+            <img src="assets/logos/lfg.png" alt="LFG" loading="lazy"
                  onerror="this.closest('.logo').classList.add('is-empty'); this.remove();">
             <span class="logo-fallback">LFG</span>
           </a>
         </li>
         <li class="logo reveal">
           <a class="logo-link" href="https://uae.fastandup.com/" target="_blank" rel="noopener noreferrer" aria-label="Fast&amp;Up">
-            <img src="assets/logos/fast-and-up.png" alt="Fast&amp;Up"
+            <img src="assets/logos/fast-and-up.png" alt="Fast&amp;Up" loading="lazy"
                  onerror="this.closest('.logo').classList.add('is-empty'); this.remove();">
             <span class="logo-fallback">Fast&amp;Up</span>
           </a>
         </li>
-      </ul>
+        </ul>
+      </div>
     </section>
 
-    <!-- ─────────────────────────────  ABOUT  ──────────────────────────── -->
-    <section id="about" class="about container">
-      <div class="about-grid">
+    <!-- ─────────────────────────────  OFFER  ──────────────────────────── -->
+    <section id="offer" class="offer" data-checkpoint="Playbook">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title"><span class="section-index mono">06</span>The playbook</h2>
+          <p class="section-tag mono">How we can work together</p>
+        </header>
+
+        <ol class="offer-list">
+          <li class="offer-row reveal">
+            <span class="offer-index mono">01</span>
+            <div class="offer-copy">
+              <h3 class="offer-name">Dedicated reels</h3>
+              <p class="offer-desc">Concept, shoot and edit built around your product, in my voice, so it lands like content instead of an ad.</p>
+            </div>
+            <span class="offer-arrow" aria-hidden="true">→</span>
+          </li>
+          <li class="offer-row reveal">
+            <span class="offer-index mono">02</span>
+            <div class="offer-copy">
+              <h3 class="offer-name">Story series</h3>
+              <p class="offer-desc">Day in the life placements with links, polls and honest first reactions.</p>
+            </div>
+            <span class="offer-arrow" aria-hidden="true">→</span>
+          </li>
+          <li class="offer-row reveal">
+            <span class="offer-index mono">03</span>
+            <div class="offer-copy">
+              <h3 class="offer-name">Race-day coverage</h3>
+              <p class="offer-desc">Your brand on course. Bibs, kits, fuel and recovery, shot where it is actually used.</p>
+            </div>
+            <span class="offer-arrow" aria-hidden="true">→</span>
+          </li>
+          <li class="offer-row reveal">
+            <span class="offer-index mono">04</span>
+            <div class="offer-copy">
+              <h3 class="offer-name">UGC for your channels</h3>
+              <p class="offer-desc">Content shot for your feed and your ads, licensed for you to run.</p>
+            </div>
+            <span class="offer-arrow" aria-hidden="true">→</span>
+          </li>
+          <li class="offer-row reveal">
+            <span class="offer-index mono">05</span>
+            <div class="offer-copy">
+              <h3 class="offer-name">Ambassadorships</h3>
+              <p class="offer-desc">Long term partnerships that compound, the kind people remember you for.</p>
+            </div>
+            <span class="offer-arrow" aria-hidden="true">→</span>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────  STORY  ──────────────────────────── -->
+    <section id="story" class="story" data-checkpoint="Story">
+      <div class="container story-grid">
 
         <figure class="portrait reveal">
           <picture>
             <source srcset="assets/denzel.webp" type="image/webp">
             <img src="assets/denzel.jpg" width="800" height="1190" loading="lazy" decoding="async"
-                 alt="Denzel, standing against the Dubai skyline"
+                 alt="Denzel, standing against the Dubai skyline at dusk"
                  onerror="this.closest('.portrait').classList.add('is-empty'); this.remove();">
           </picture>
-          <figcaption class="portrait-fallback">
+          <figcaption class="portrait-caption mono">Dubai · 25.2048° N, 55.2708° E</figcaption>
+          <div class="portrait-fallback" aria-hidden="true">
             <span>DZ</span>
-            <small>assets/denzel.jpg</small>
-          </figcaption>
+          </div>
         </figure>
 
-        <div>
-          <h2 class="label about-kicker reveal">Why brands work with me</h2>
-          <p class="about-lede reveal">Authentic connection with my audience, and value-oriented storytelling.</p>
-          <p class="about-body reveal">The values of the brand and mine should align towards benefiting the community — that is what creates real connection and relatability, rather than another ad people scroll past.</p>
+        <div class="story-copy">
+          <p class="section-kicker mono reveal">Why brands work with me</p>
+          <p class="story-lede reveal">Authentic connection with my audience, and value oriented storytelling.</p>
+          <blockquote class="story-quote serif reveal">&ldquo;The values of the brand and mine should align towards benefiting the community.&rdquo;</blockquote>
+          <p class="story-body reveal">That is what creates real connection and relatability, rather than another ad people scroll past. I only post about things I actually use.</p>
 
-          <ul class="about-tags reveal">
+          <ul class="story-tags mono reveal">
             <li>Gym &amp; training</li>
             <li>Hybrid performance</li>
             <li>Lifestyle</li>
@@ -247,29 +533,59 @@
     </section>
 
     <!-- ────────────────────────────  CONTACT  ─────────────────────────── -->
-    <section id="contact" class="contact container">
-      <p class="label reveal">Work with me</p>
+    <div class="finish-line" aria-hidden="true"></div>
 
-      <a class="contact-cta reveal" href="mailto:denzel23jo@gmail.com">
-        Let’s <em>create.</em>
-      </a>
+    <section id="contact" class="contact" data-checkpoint="Finish">
+      <div class="container">
+        <p class="section-kicker mono reveal">Work with me</p>
 
-      <div class="contact-links reveal">
-        <a class="link" href="mailto:denzel23jo@gmail.com">denzel23jo@gmail.com</a>
-        <a class="link" href="tel:+971509179493">+971 50 917 9493</a>
-        <a class="link" href="https://instagram.com/dnzlszn" target="_blank" rel="noopener noreferrer">@dnzlszn</a>
+        <a class="contact-cta reveal" href="mailto:denzel23jo@gmail.com">
+          <span class="contact-cta-line">Let's <em class="serif">create.</em></span>
+        </a>
+
+        <p class="contact-note mono reveal">I reply within 24 hours.</p>
+
+        <div class="contact-links reveal">
+        <a class="contact-link reveal" href="mailto:denzel23jo@gmail.com">
+          <span class="contact-link-label mono">Email</span>
+          <span class="contact-link-value">denzel23jo@gmail.com</span>
+          <span class="contact-link-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="contact-link reveal" href="https://wa.me/971509179493" target="_blank" rel="noopener noreferrer">
+          <span class="contact-link-label mono">WhatsApp</span>
+          <span class="contact-link-value">+971 50 917 9493</span>
+          <span class="contact-link-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="contact-link reveal" href="https://instagram.com/dnzlszn" target="_blank" rel="noopener noreferrer">
+          <span class="contact-link-label mono">Instagram</span>
+          <span class="contact-link-value">@dnzlszn</span>
+          <span class="contact-link-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="contact-link reveal" href="tel:+971509179493">
+          <span class="contact-link-label mono">Call</span>
+          <span class="contact-link-value">+971 50 917 9493</span>
+          <span class="contact-link-arrow" aria-hidden="true">↗</span>
+        </a>
+        </div>
+
+        <footer class="site-footer mono">
+          <p>© <span data-year></span> Denzel · Dubai, United Arab Emirates</p>
+          <p class="site-footer-coords">25.2048° N, 55.2708° E · UAE media licensed</p>
+          <a class="back-to-top" href="#top">Back to the start ↑</a>
+        </footer>
       </div>
-
-      <footer class="site-footer">
-        <p>© <span data-year></span> Denzel</p>
-        <a class="link back-to-top" href="#top">Back to top ↑</a>
-      </footer>
     </section>
 
   </main>
 
+  <!-- Fixed timing strip: live Dubai clock, current checkpoint, distance. -->
+  <div class="telemetry mono" aria-hidden="true">
+    <span class="telemetry-cell"><span class="telemetry-dot">●</span>&nbsp;DXB&nbsp;<span data-clock>--:--:--</span>&nbsp;GST</span>
+    <span class="telemetry-cell telemetry-cell--mid" data-split>START</span>
+    <span class="telemetry-cell"><span data-covered>000</span>%</span>
+  </div>
+
   <div class="grain" aria-hidden="true"></div>
-  <div class="page-transition" aria-hidden="true"></div>
 
 </div>
 
