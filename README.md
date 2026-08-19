@@ -44,8 +44,10 @@ touches a component rule. Panels (the manifesto, work and contact sections,
 and the "why small wins" band) remap those tokens locally, which is why the
 same rules work on inverted grounds.
 
-To compare all five live, open the page with `?compare=1` and a palette
-switcher appears at the bottom. The published site never shows it.
+While Denzel is choosing, `compare: on` in the same block ships a small
+switcher in the bottom corner so he can try all five on the real page.
+Set it to `off` once he has picked, and put his choice in `palette`.
+`?compare=1` on the URL does the same thing without editing anything.
 
 ## Editing content
 
@@ -64,6 +66,8 @@ Several things are derived automatically so they cannot drift out of sync:
 | benchmark rows | bar widths scaled to the largest value; the row flagged `me` is drawn in the accent |
 | pillar numbers `01` | the Arabic-numeral watermark `٠١` |
 | `palette:` | the `data-palette` attribute and the browser chrome colour |
+| `compare:` | whether the palette switcher ships with the page |
+| `site-url:` | the absolute URL of the Open Graph share image |
 | `+971 50 917 9493` | the `tel:` and `wa.me` links |
 | `male:` / `female:` | split-bar width and its screen-reader label |
 
@@ -94,7 +98,7 @@ update the live site.
 - `?static=1` renders the settled page with no motion. Use it for
   screenshots, or print it (Ctrl/Cmd+P) to hand a brand the kit as a PDF.
   A print stylesheet reflows the whole site for paper.
-- `?compare=1` shows the palette switcher described above.
+- `?compare=1` shows the palette switcher without editing `content.md`.
 
 ## Assets
 
@@ -109,6 +113,8 @@ update the live site.
 
 - Motion respects `prefers-reduced-motion`: all travel is dropped and the
   pass stops swinging, but the hero still cross-fades in.
+- The timing strip stays hidden over the opening frame and slides up once
+  you start scrolling, so the first thing a brand sees is uncluttered.
 - If the GSAP CDN is unreachable the page renders fully visible rather than
   blank. Every entrance state hangs off a class set only when GSAP loads,
   and the hero waits on the display font with a 1.8 s failsafe.
