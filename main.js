@@ -227,37 +227,37 @@
   // rig  → left/right pointer swings strap and card together
   // card → up/down pointer tips the card on its own axis
 
-  var passScene = document.querySelector(".pass-scene");
-  var passSwing = document.querySelector(".pass-swing");
+  var pass = document.querySelector(".pass");
   var passTilt = document.querySelector(".pass-tilt");
 
-  var pass = document.querySelector(".pass");
-
-  if (hasGSAP && pass && passSwing && passTilt &&
+  if (hasGSAP && pass && passTilt &&
       window.matchMedia("(hover: hover)").matches && !reduced) {
     gsap.set(passTilt, { rotation: 3, transformPerspective: 900 });
-    gsap.set(passSwing, { transformPerspective: 1100 });
 
-    var swingY = gsap.quickTo(passSwing, "rotationY", { duration: 0.5, ease: "power2.out" });
-    var swingZ = gsap.quickTo(passSwing, "rotation", { duration: 0.7, ease: "power2.out" });
-    var cardX = gsap.quickTo(passTilt, "rotationX", { duration: 0.5, ease: "power2.out" });
+    var toRX = gsap.quickTo(passTilt, "rotationX", { duration: 0.5, ease: "power2.out" });
+    var toRY = gsap.quickTo(passTilt, "rotationY", { duration: 0.5, ease: "power2.out" });
 
-    // Pointer is read against the card itself, so the pass only responds
-    // while you are actually on it. Tracking the whole hero made it twitch
-    // at every mouse move on the page.
+    // A slow idle sway on the z-rotation keeps the card feeling hung,
+    // while the pointer drives X/Y independently.
+    gsap.to(passTilt, {
+      rotation: 4.2,
+      duration: 2.6,
+      yoyo: true,
+      repeat: -1,
+      ease: "sine.inOut"
+    });
+
     pass.addEventListener("pointermove", function (e) {
       var r = pass.getBoundingClientRect();
       var px = (e.clientX - r.left) / r.width - 0.5;
       var py = (e.clientY - r.top) / r.height - 0.5;
-      swingY(px * 14);
-      swingZ(px * 1.6);   // strap follows the card instead of standing still
-      cardX(py * -12);
+      toRY(px * 14);
+      toRX(py * -12);
     });
 
     pass.addEventListener("pointerleave", function () {
-      swingY(0);
-      swingZ(0);
-      cardX(0);
+      toRX(0);
+      toRY(0);
     });
   }
 
@@ -300,12 +300,11 @@
       { opacity: 1, y: 0, duration: 0.7,
         onComplete: release(".hero-eyebrow", document.querySelector(".hero-eyebrow")) },
       0.3)
-    // The pass drops in on its strap, so the first thing it does is fall.
     .fromTo(".pass-scene",
-      { opacity: 0, y: -70 },
-      { opacity: 1, y: 0, duration: 1.15, ease: "power4.out",
+      { opacity: 0, y: 44, rotate: 2 },
+      { opacity: 1, y: 0, rotate: 0, duration: 1.1, ease: "power4.out",
         onComplete: release(".pass-scene", document.querySelector(".pass-scene")) },
-      0.5)
+      0.55)
     .fromTo([".hero-intro", ".hero-definition", ".hero-scroll"],
       { opacity: 0, y: 18 },
       { opacity: 1, y: 0, duration: 0.8, stagger: 0.1,

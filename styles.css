@@ -32,7 +32,6 @@
   --gutter: clamp(20px, 4.5vw, 56px);
   --section-pad: clamp(88px, 12vw, 168px);
   --telemetry-h: 30px;
-  --strap: 56vh;
 }
 
 /* ── Palettes ──────────────────────────────────────────────── */
@@ -645,44 +644,15 @@ html.gsap :is(.hero-eyebrow, .hero-definition, .hero-intro, .hero-scroll, .pass-
   align-items: center;
   justify-content: center;
   z-index: 2;
-  perspective: 1100px;
-}
-
-/* Strap and card hang off one rig, so a pointer move swings the whole
-   assembly from its anchor instead of sliding the card out from under
-   a static ribbon. Two nested layers because the idle pendulum (CSS) and
-   the pointer swing (GSAP) would otherwise fight over one transform. */
-.pass-rig {
-  transform-style: preserve-3d;
-  transform-origin: 50% calc(-1 * var(--strap));
-  animation: pass-pendulum 6.5s ease-in-out infinite;
-}
-
-.pass-swing {
-  position: relative;
-  transform-style: preserve-3d;
-  transform-origin: 50% calc(-1 * var(--strap));
-  will-change: transform;
-}
-
-@keyframes pass-pendulum {
-  0%, 100% { transform: rotate(-0.55deg); }
-  50%      { transform: rotate(0.55deg); }
 }
 
 .pass-lanyard {
   position: absolute;
-  bottom: 100%;
+  top: -60vh;
   left: 50%;
-  width: 20px;
-  height: var(--strap);
-  margin-left: -10px;
-  transform-style: preserve-3d;
-}
-
-.pass-lanyard-strap {
-  position: absolute;
-  inset: 0;
+  width: 16px;
+  height: 65vh;
+  transform: translateX(-50%);
   background:
     repeating-linear-gradient(
       180deg,
@@ -690,26 +660,12 @@ html.gsap :is(.hero-eyebrow, .hero-definition, .hero-intro, .hero-scroll, .pass-
       var(--accent) 14px 18px
     );
   opacity: 0.92;
-  /* Reads as woven webbing rather than a flat bar. */
-  box-shadow: inset -4px 0 8px -3px rgba(0, 0, 0, 0.55),
-              inset 4px 0 6px -4px rgba(255, 255, 255, 0.25);
 }
 
-/* The metal clip where the strap meets the card. */
-.pass-lanyard-clip {
-  position: absolute;
-  left: 50%;
-  bottom: -9px;
-  width: 26px;
-  height: 16px;
-  margin-left: -13px;
-  border: 2px solid var(--fg);
-  border-radius: 3px;
-  background: var(--bg);
-  opacity: 0.9;
+.pass {
+  perspective: 1200px;
+  width: clamp(250px, 22vw, 330px);
 }
-
-.pass { width: clamp(250px, 22vw, 330px); }
 
 .pass-tilt {
   background: var(--paper);
@@ -1367,35 +1323,28 @@ html.gsap .split-fill { transform: scaleX(0); }
   padding: clamp(20px, 3vw, 40px);
 }
 
+/* Every logo is stored as an alpha silhouette rather than as artwork
+   (see tools/normalize_logos.py), so a single rule reads correctly on any
+   ground. The marks arrive in three incompatible forms — dark on
+   transparency, white on transparency, and light on an opaque coloured
+   square — which no one filter could have reconciled. */
 .logo img {
-  max-width: min(60%, 170px);
-  max-height: 64px;
+  max-width: min(62%, 166px);
+  max-height: 58px;
   width: auto;
   object-fit: contain;
-  transition: filter 0.3s, opacity 0.3s;
-}
-
-/* Light palettes: darken the marks so pale logos survive the ground.
-   Dark palettes: knock them out to the page's own foreground instead. */
-[data-palette="bib"] .logo img,
-[data-palette="sand"] .logo img {
-  filter: grayscale(1) brightness(0.45) contrast(1.05);
-  mix-blend-mode: multiply;
-  opacity: 0.85;
+  filter: brightness(0);
+  opacity: 0.6;
+  transition: opacity 0.3s;
 }
 
 [data-palette="night"] .logo img,
 [data-palette="gulf"] .logo img,
 [data-palette="blackout"] .logo img {
-  filter: grayscale(1) brightness(0) invert(1);
-  opacity: 0.62;
+  filter: brightness(0) invert(1);
 }
 
-.logo-link:hover img {
-  filter: none;
-  mix-blend-mode: normal;
-  opacity: 1;
-}
+.logo-link:hover img { opacity: 1; }
 
 .logo-fallback {
   display: none;
@@ -1779,8 +1728,7 @@ html.gsap .split-fill { transform: scaleX(0); }
 
 @media (prefers-reduced-motion: reduce) {
   .ticker-track { animation: none; flex-wrap: wrap; width: auto; }
-  .hero-scroll-arrow, .pass-head-dot, .telemetry-dot,
-  .pass-rig { animation: none; }
+  .hero-scroll-arrow, .pass-head-dot, .telemetry-dot { animation: none; }
 }
 
 /* ── Responsive ────────────────────────────────────────────── */

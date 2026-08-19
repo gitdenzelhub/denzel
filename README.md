@@ -107,7 +107,26 @@ update the live site.
 - `assets/og.jpg` — 1200×630 Open Graph share card
 - `assets/favicon.svg` — browser-tab mark
 - `assets/logos/` — brand logos, referenced by filename from `content.md`.
-  A missing file falls back to the brand name set as a wordmark.
+  These are generated silhouettes, not the original artwork. A missing
+  file falls back to the brand name set as a wordmark.
+- `logo-sources/` — the original logo files, kept out of the deployed site.
+
+### Replacing a logo
+
+Drop the new file into `logo-sources/`, then run:
+
+```bash
+python tools/normalize_logos.py     # needs Pillow
+```
+
+It rewrites `assets/logos/` and keeps the filename, so `content.md` does
+not change. The partner wall has to sit on five different grounds, and the
+logos arrive in three incompatible forms: dark marks on transparency,
+white marks on transparency, and light marks baked onto an opaque coloured
+square. No single CSS filter can reconcile those, so each logo is stored as
+an alpha silhouette instead. One rule then reads correctly everywhere.
+The site build itself never touches images, so GitHub Actions needs no
+extra dependencies.
 
 ## Notes
 
@@ -118,6 +137,6 @@ update the live site.
 - If the GSAP CDN is unreachable the page renders fully visible rather than
   blank. Every entrance state hangs off a class set only when GSAP loads,
   and the hero waits on the display font with a 1.8 s failsafe.
-- Logos are normalised per palette: darkened on light grounds, knocked out
-  to the page foreground on dark ones. They regain full colour on hover.
+- Logos sit at 60% opacity and come up to full on hover, in the page's own
+  foreground colour rather than their brand colours. See above for why.
 - The timing strip clock is Asia/Dubai regardless of the visitor's timezone.
