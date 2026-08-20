@@ -16,8 +16,8 @@ would say it out loud. No em dashes, no marketing filler.
 
 owner: Denzel
 palette: night
-compare: on
-site-url: https://haziq-exe.github.io/dnzl-szn
+compare: off
+site-url: https://gitdenzelhub.github.io/denzel
 title: Denzel | Hybrid athlete and creator, Dubai
 description: Media kit for Denzel (@dnzlszn). HOKA Middle East athlete in Dubai making gym, running, race day and lifestyle content. 5.75% engagement across 1,890 followers.
 share-text: Hybrid athlete and creator in Dubai. 1,890 people, 5.75% engagement, six brand partners.
