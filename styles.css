@@ -505,6 +505,21 @@ em { font-style: italic; }
   overflow: hidden;
 }
 
+/* Cursor-reactive dust behind the hero. Colours are read from the live
+   palette in main.js, so it recolours with the rest of the page. */
+.hero-field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity 1.6s ease 0.35s;
+}
+
+html.gsap .hero-field { opacity: 0; }
+html.gsap .hero-field.is-in { opacity: 1; }
+
 /* Track lane lines, fading out before they reach the type. */
 .lanes {
   position: absolute;
@@ -1660,6 +1675,9 @@ html.gsap .split-fill { transform: scaleX(0); }
 .telemetry-cell--mid { color: var(--bg); }
 
 /* ── Palette compare (opt-in only) ─────────────────────────── */
+/* Collapsed to a single grey arrow so it never competes with the page.
+   Neutral grey rather than a palette token, because this is fixed over
+   whichever section happens to be scrolled past, light or dark. */
 
 .palette-bar {
   position: fixed;
@@ -1668,48 +1686,79 @@ html.gsap .split-fill { transform: scaleX(0); }
   z-index: 240;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 7px 8px 7px 12px;
-  border-radius: 99px;
-  background: rgba(16, 16, 18, 0.72);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 0 10px 26px -12px rgba(0, 0, 0, 0.7);
-  opacity: 0.62;
-  transition: opacity 0.25s;
+  gap: 8px;
 }
 
-.palette-bar:hover,
-.palette-bar:focus-within { opacity: 1; }
-
-.palette-bar-name {
-  font-family: var(--font-mono);
-  font-size: 8.5px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.82);
-  white-space: nowrap;
-}
-
-.palette-dots { display: flex; gap: 5px; }
-
-.palette-dot {
-  width: 18px;
-  height: 18px;
+.palette-toggle {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  display: grid;
+  place-items: center;
   padding: 0;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.32);
   cursor: pointer;
-  background: linear-gradient(135deg, var(--chip-bg) 0 55%, var(--chip-accent) 55% 100%);
-  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  color: #8c8c8c;
+  background: rgba(128, 128, 128, 0.14);
+  border: 1px solid rgba(128, 128, 128, 0.26);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: color 0.25s, background 0.25s, border-color 0.25s;
 }
 
-.palette-dot:hover { transform: scale(1.16); }
+.palette-toggle:hover {
+  color: #c9c9c9;
+  background: rgba(128, 128, 128, 0.26);
+  border-color: rgba(160, 160, 160, 0.45);
+}
+
+.palette-toggle svg {
+  width: 13px;
+  height: 13px;
+  transition: transform 0.3s cubic-bezier(0.6, 0, 0.2, 1);
+}
+
+.palette-bar.is-open .palette-toggle svg { transform: rotate(180deg); }
+
+.palette-dots {
+  display: flex;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 99px;
+  background: rgba(128, 128, 128, 0.16);
+  border: 1px solid rgba(128, 128, 128, 0.26);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(10px) scale(0.94);
+  transform-origin: right center;
+  transition: opacity 0.28s, visibility 0.28s,
+              transform 0.28s cubic-bezier(0.6, 0, 0.2, 1);
+}
+
+.palette-bar.is-open .palette-dots {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.palette-dot {
+  width: 17px;
+  height: 17px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--chip-bg) 0 55%, var(--chip-accent) 55% 100%);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.28);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.palette-dot:hover { transform: scale(1.18); }
 
 .palette-dot[aria-pressed="true"] {
-  border-color: #fff;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 0 3px rgba(0, 0, 0, 0.35);
 }
 
 /* ── Grain ─────────────────────────────────────────────────── */
@@ -1793,8 +1842,11 @@ html.gsap .split-fill { transform: scaleX(0); }
 
   .telemetry-cell--mid { display: none; }
 
-  .palette-bar { right: 10px; bottom: calc(var(--telemetry-h) + 10px); gap: 8px; }
-  .palette-bar-name { display: none; }
+  /* A few thousand particles is not worth the battery on a phone, and
+     there is no cursor to react to anyway. */
+  .hero-field { display: none; }
+
+  .palette-bar { right: 10px; bottom: calc(var(--telemetry-h) + 10px); gap: 6px; }
 }
 
 @media (max-width: 400px) {
@@ -1809,7 +1861,7 @@ html.gsap .split-fill { transform: scaleX(0); }
 
   body { background: #fff; color: #000; padding-bottom: 0; font-size: 12px; }
 
-  .course, .telemetry, .grain, .ticker, .lanes, .palette-bar,
+  .course, .telemetry, .grain, .ticker, .lanes, .palette-bar, .hero-field,
   .nav-toggle, .mobile-menu, .header-cta, .hero-scroll,
   .site-nav, .site-header, .skip-link { display: none !important; }
 
