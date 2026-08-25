@@ -549,6 +549,10 @@
   var heroStack = document.querySelector(".hero-stack");
   var heroLines = document.querySelectorAll(".hero-line-inner");
 
+  // Park the lines below their masks before anything can paint them, so the
+  // parent's opacity is the only thing the stylesheet has to hide.
+  if (heroLines.length) gsap.set(heroLines, { yPercent: 112 });
+
   var intro = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
 
   intro
@@ -592,6 +596,7 @@
     measureCourse();
     updateCourse();
     if (canvas) canvas.classList.add("is-in");
+    if (heroStack) heroStack.classList.add("is-in");
     intro.play();
   }
 
@@ -645,23 +650,29 @@
   /* Manifesto lines climb out of their masks, then the soul line. */
 
   var manifestoLines = document.querySelectorAll(".manifesto-line-inner");
+  var manifestoWrap = document.querySelector(".manifesto-lines");
   if (manifestoLines.length) {
+    gsap.set(manifestoLines, { yPercent: 112 });
+
     gsap.timeline({
-      scrollTrigger: { trigger: ".manifesto", start: "top 62%", once: true }
+      // Triggered on the text itself rather than the section, whose top
+      // padding sits a long way above the first line.
+      scrollTrigger: { trigger: ".manifesto-lines", start: "top 85%", once: true },
+      onStart: function () {
+        if (manifestoWrap) manifestoWrap.classList.add("is-in");
+      }
     })
       .fromTo(manifestoLines,
         { yPercent: 112 },
-        { yPercent: 0, duration: 1, stagger: 0.16, ease: "expo.out",
+        { yPercent: 0, duration: 0.75, stagger: 0.08, ease: "expo.out",
           onComplete: function () {
-            var wrap = document.querySelector(".manifesto-lines");
-            if (wrap) wrap.classList.add("is-in");
             gsap.set(manifestoLines, { clearProps: "transform" });
           } })
       .fromTo(".manifesto-soul",
         { opacity: 0, y: 22 },
         { opacity: 1, y: 0, duration: 0.9, ease: "power3.out",
           onComplete: release(".manifesto-soul", document.querySelector(".manifesto-soul")) },
-        0.55);
+        0.4);
   }
 
   /* Benchmark bars and the audience split grow from the left. */

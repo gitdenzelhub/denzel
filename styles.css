@@ -583,8 +583,12 @@ html.gsap .hero-field.is-in { opacity: 1; }
 
 .hero-line:last-child .hero-line-inner { color: var(--accent); }
 
-html.gsap .hero-line-inner { transform: translateY(112%); }
-html.gsap .hero-stack.is-in .hero-line-inner { transform: none; }
+/* The masked lines are positioned by GSAP alone. Setting the same offset
+   in CSS too would be parsed as a base transform and added to yPercent, so
+   the tween could never bring the line back to zero. The pre-animation
+   state is carried on the parent's opacity instead. */
+html.gsap .hero-stack { opacity: 0; }
+html.gsap .hero-stack.is-in { opacity: 1; }
 
 .hero-definition {
   grid-area: def;
@@ -895,7 +899,6 @@ html.gsap :is(.reveal, .reel-row) { opacity: 0; }
 html.gsap :is(.reveal, .reel-row).is-in { opacity: 1; }
 
 /* Rest-state overrides used by the no-motion fallback path. */
-html.gsap .manifesto-lines.is-in .manifesto-line-inner { transform: none; }
 html.gsap .bench-fill.is-in,
 html.gsap .split-fill.is-in { transform: scaleX(1); }
 
@@ -948,7 +951,8 @@ html.gsap .split-fill.is-in { transform: scaleX(1); }
 
 .manifesto-line-inner { display: inline-block; will-change: transform; }
 
-html.gsap .manifesto-line-inner { transform: translateY(112%); }
+html.gsap .manifesto-lines { opacity: 0; }
+html.gsap .manifesto-lines.is-in { opacity: 1; }
 
 .manifesto-soul {
   margin-top: clamp(36px, 5vw, 64px);
