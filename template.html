@@ -3,22 +3,25 @@
   GENERATED FILE — do not edit index.html by hand.
   Edit content.md (text) or template.html (markup), then run: python build.py
 -->
-<html lang="en">
+<html lang="en" data-palette="{{PALETTE}}" data-compare="{{COMPARE}}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{META_TITLE}}</title>
 <meta name="description" content="{{META_DESCRIPTION}}">
-<meta name="theme-color" content="#0a0a0a">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="{{THEME_COLOR}}">
 
 <meta property="og:title" content="{{META_TITLE}}">
 <meta property="og:description" content="{{SHARE_TEXT}}">
 <meta property="og:type" content="website">
+<meta property="og:image" content="{{OG_IMAGE}}">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -39,90 +42,227 @@
 
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <header class="site-header container">
-    <a class="site-name link" href="#top">{{NAME}}</a>
+  <!-- Course profile: fills as you scroll, with a tick at every checkpoint. -->
+  <div class="course" aria-hidden="true">
+    <span class="course-fill"></span>
+    <span class="course-ticks"></span>
+  </div>
+
+  <header class="site-header">
+    <a class="site-name" href="#top">
+      <span class="site-name-block">{{NAME}}</span>
+    </a>
     <nav class="site-nav" aria-label="Primary">
 {{NAV}}
     </nav>
+    <a class="header-cta" href="#contact">Work with me</a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span>
+    </button>
   </header>
+
+  <nav id="mobile-menu" class="mobile-menu" aria-label="Mobile">
+{{NAV_MOBILE}}
+    <a class="mobile-menu-cta" href="#contact">Work with me</a>
+  </nav>
 
   <main id="main">
 
     <!-- ─────────────────────────────  HERO  ───────────────────────────── -->
-    <section id="top" class="hero container">
-      <img class="hero-mobile-photo" src="{{HERO_MOBILE_PHOTO}}"
-           alt="{{HERO_MOBILE_PHOTO_ALT}}"
-           width="1200" height="1600" decoding="async">
-      <canvas class="hero-field" aria-hidden="true"></canvas>
+    <section id="top" class="hero" data-checkpoint="Start">
+      <div class="lanes" aria-hidden="true"></div>
 
-      <!-- Wrapper exists so the scroll parallax has something of its own to
-           move. Parallaxing the children directly would fight the intro
-           timeline for the same properties. -->
-      <div class="hero-inner">
-        <p class="hero-eyebrow label">{{HERO_EYEBROW}}</p>
+      <div class="hero-grid container">
 
-        <h1 class="hero-title">
-          <span class="sr-only">{{HERO_HEADLINE_PLAIN}}</span>
-          <span class="hero-headline" aria-hidden="true" data-split="{{HERO_HEADLINE}}"></span>
+        <p class="hero-eyebrow mono">{{HERO_EYEBROW}}</p>
+
+        <h1 class="hero-stack">
+          <span class="sr-only">{{HERO_STACK_PLAIN}}. {{HERO_EYEBROW}}</span>
+{{HERO_STACK}}
         </h1>
 
-        <div class="hero-foot">
-          <p class="hero-intro">{{HERO_INTRO}}</p>
-          <p class="hero-scroll label">{{HERO_SCROLL}} <span class="hero-scroll-arrow">↓</span></p>
+        <aside class="hero-definition" aria-label="Definition">
+          <p class="hero-def-term"><em>{{DEF_TERM}}</em> <span class="mono">{{DEF_SAY}}</span></p>
+          <p class="hero-def-text">{{DEF_TEXT}}</p>
+        </aside>
+
+        <p class="hero-intro">{{HERO_INTRO}}</p>
+
+        <!-- Athlete credential: the media kit as a race-day pass. -->
+        <div class="pass-scene">
+          <div class="pass-lanyard" aria-hidden="true"></div>
+            <div class="pass" role="img" aria-label="Athlete pass for {{HERO_STACK_PLAIN}}, bib {{BIB}}, {{PASS_TEAM}}, Dubai UAE">
+              <div class="pass-tilt">
+                <div class="pass-head mono" aria-hidden="true">
+                  <span>ATHLETE&nbsp;PASS</span>
+                  <span class="pass-head-dot">●&nbsp;LIVE</span>
+                </div>
+                <figure class="pass-photo" aria-hidden="true">
+                  <img src="{{HERO_PHOTO}}" alt="" width="1200" height="1600" decoding="async">
+                </figure>
+                <div class="pass-meta" aria-hidden="true">
+                  <p class="pass-name">DENZEL</p>
+                  <p class="pass-role mono">HYBRID ATHLETE / CREATOR</p>
+                  <div class="pass-row mono">
+                    <span class="pass-bib">BIB {{BIB}}</span>
+                    <span>{{PASS_TEAM}}</span>
+                  </div>
+                  <div class="pass-row mono">
+                    <span>{{PASS_LICENSE}}</span>
+                    <span>DXB&nbsp;·&nbsp;UAE</span>
+                  </div>
+                </div>
+                <div class="pass-barcode" aria-hidden="true"></div>
+                <p class="pass-caption mono" aria-hidden="true">{{HERO_PHOTO_CAPTION}}</p>
+              </div>
+            </div>
         </div>
+
+        <p class="hero-scroll mono">{{HERO_SCROLL}} <span class="hero-scroll-arrow">↓</span></p>
+      </div>
+
+      <!-- Marquee band along the hero's lower edge. The phrase list is
+           rendered four times so the -50% loop stays seamless even on
+           ultrawide screens. -->
+      <div class="ticker" aria-hidden="true">
+        <div class="ticker-track">
+{{TICKER}}
+{{TICKER}}
+{{TICKER}}
+{{TICKER}}
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────────  MANIFESTO  ────────────────────────── -->
+    <section class="manifesto" id="manifesto" data-checkpoint="The idea">
+      <div class="container">
+        <p class="section-kicker mono manifesto-kicker">{{MANIFESTO_KICKER}}</p>
+        <div class="manifesto-lines">
+{{MANIFESTO_LINES}}
+        </div>
+        <p class="manifesto-soul serif">{{MANIFESTO_SOUL}}</p>
       </div>
     </section>
 
     <!-- ────────────────────────────  NUMBERS  ─────────────────────────── -->
-    <section id="numbers" class="numbers container">
-      <div class="section-head">
-        <h2 class="label">{{NUMBERS_HEADING}}</h2>
-        <p class="label">{{NUMBERS_TAG}}</p>
-      </div>
+    <section id="numbers" class="numbers" data-checkpoint="Numbers">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title"><span class="section-index mono">01</span>{{NUMBERS_HEADING}}</h2>
+          <p class="section-tag mono">{{NUMBERS_TAG}}</p>
+        </header>
 
-      <dl class="stat-grid">
-{{STATS}}
-      </dl>
-
-      <div class="split reveal">
-        <h3 class="label split-head">{{SPLIT_HEADING}}</h3>
-        <div class="split-bar" role="img" aria-label="{{SPLIT_ARIA}}">
-          <span class="split-fill" style="--male: {{MALE}}%"></span>
+        <!-- Headline stat with benchmark comparison. -->
+        <div class="er reveal">
+          <div class="er-figure">
+            <p class="er-value">
+              <span data-count="{{ER_VALUE}}" data-decimals="2">{{ER_VALUE}}</span><span class="er-unit">{{ER_UNIT}}</span>
+            </p>
+            <p class="er-label mono">{{ER_LABEL}}</p>
+          </div>
+          <div class="er-context">
+            <p class="er-note">{{ER_NOTE}}</p>
+            <div class="benchmark" role="img" aria-label="{{BENCH_ARIA}}">
+{{BENCHMARKS}}
+            </div>
+          </div>
         </div>
-        <ul class="split-key">
-          <li><span class="split-dot split-dot--male"></span>Male · {{MALE}}%</li>
-          <li><span class="split-dot split-dot--female"></span>Female · {{FEMALE}}%</li>
+
+        <dl class="stat-grid">
+{{STATS}}
+        </dl>
+
+        <div class="split reveal">
+          <h3 class="mono split-head">{{SPLIT_HEADING}}</h3>
+          <div class="split-bar" role="img" aria-label="{{SPLIT_ARIA}}">
+            <span class="split-fill" style="--male: {{MALE}}%"></span>
+          </div>
+          <ul class="split-key mono">
+            <li><span class="split-dot split-dot--male"></span>Male · {{MALE}}%</li>
+            <li><span class="split-dot split-dot--female"></span>Female · {{FEMALE}}%</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────  VALUE  ──────────────────────────── -->
+    <section id="value" class="value" data-checkpoint="Why me">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title"><span class="section-index mono">02</span>{{VALUE_HEADING}}</h2>
+          <p class="section-tag mono">{{VALUE_TAG}}</p>
+        </header>
+
+        <ul class="value-list">
+{{VALUES}}
         </ul>
       </div>
     </section>
 
-    <!-- ────────────────────────────  CONTENT  ─────────────────────────── -->
-    <section id="content" class="content container">
-      <div class="section-head">
-        <h2 class="label">{{CONTENT_HEADING}}</h2>
-        <p class="label">({{CONTENT_COUNT}})</p>
-      </div>
+    <!-- ────────────────────────────  PILLARS  ─────────────────────────── -->
+    <section id="pillars" class="pillars" data-checkpoint="Pillars">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title"><span class="section-index mono">03</span>{{PILLARS_HEADING}}</h2>
+          <p class="section-tag mono">{{PILLARS_TAG}}</p>
+        </header>
 
-      <ul class="reel-list">
+        <ol class="pillar-grid">
+{{PILLARS}}
+        </ol>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────  WORK  ───────────────────────────── -->
+    <section id="work" class="work" data-checkpoint="Work">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title"><span class="section-index mono">04</span>{{WORK_HEADING}}</h2>
+          <p class="section-tag mono">{{WORK_TAG}}</p>
+        </header>
+
+        <ul class="reel-list">
 {{REELS}}
-      </ul>
-    </section>
+        </ul>
 
-    <!-- ─────────────────────────────  BRANDS  ─────────────────────────── -->
-    <section id="brands" class="brands container">
-      <div class="section-head">
-        <h2 class="label">{{BRANDS_HEADING}}</h2>
-        <p class="label">({{BRANDS_COUNT}})</p>
+        <a class="work-more mono" href="https://www.instagram.com/{{WORK_IG}}/reels/" target="_blank" rel="noopener noreferrer">
+          Full grid → @{{WORK_IG}}
+        </a>
       </div>
-
-      <ul class="logo-wall">
-{{LOGOS}}
-      </ul>
     </section>
 
-    <!-- ─────────────────────────────  ABOUT  ──────────────────────────── -->
-    <section id="about" class="about container">
-      <div class="about-grid">
+    <!-- ────────────────────────────  PARTNERS  ────────────────────────── -->
+    <section id="partners" class="partners" data-checkpoint="Partners">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title"><span class="section-index mono">05</span>{{PARTNERS_HEADING}}</h2>
+          <p class="section-tag mono">{{PARTNERS_TAG}}</p>
+        </header>
+
+        <ul class="logo-wall">
+{{LOGOS}}
+        </ul>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────  OFFER  ──────────────────────────── -->
+    <section id="offer" class="offer" data-checkpoint="Playbook">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title"><span class="section-index mono">06</span>{{OFFER_HEADING}}</h2>
+          <p class="section-tag mono">{{OFFER_TAG}}</p>
+        </header>
+
+        <ol class="offer-list">
+{{OFFERS}}
+        </ol>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────  STORY  ──────────────────────────── -->
+    <section id="story" class="story" data-checkpoint="Story">
+      <div class="container story-grid">
 
         <figure class="portrait reveal">
           <picture>
@@ -131,46 +271,60 @@
                  alt="{{PHOTO_ALT}}"
                  onerror="this.closest('.portrait').classList.add('is-empty'); this.remove();">
           </picture>
-          <figcaption class="portrait-fallback">
+          <figcaption class="portrait-caption mono">{{PHOTO_CAPTION}}</figcaption>
+          <div class="portrait-fallback" aria-hidden="true">
             <span>{{INITIALS}}</span>
-            <small>{{PHOTO}}</small>
-          </figcaption>
+          </div>
         </figure>
 
-        <div>
-          <h2 class="label about-kicker reveal">{{ABOUT_KICKER}}</h2>
-          <p class="about-lede reveal">{{ABOUT_LEDE}}</p>
-          <p class="about-body reveal">{{ABOUT_BODY}}</p>
+        <div class="story-copy">
+          <p class="section-kicker mono reveal">{{STORY_KICKER}}</p>
+          <p class="story-lede reveal">{{STORY_LEDE}}</p>
+          <blockquote class="story-quote serif reveal">&ldquo;{{STORY_QUOTE}}&rdquo;</blockquote>
+          <p class="story-body reveal">{{STORY_BODY}}</p>
 
-          <ul class="about-tags reveal">
-{{ABOUT_TAGS}}
+          <ul class="story-tags mono reveal">
+{{STORY_TAGS}}
           </ul>
         </div>
       </div>
     </section>
 
     <!-- ────────────────────────────  CONTACT  ─────────────────────────── -->
-    <section id="contact" class="contact container">
-      <p class="label reveal">{{CONTACT_KICKER}}</p>
+    <div class="finish-line" aria-hidden="true"></div>
 
-      <a class="contact-cta reveal" href="mailto:{{EMAIL}}">
-        {{CONTACT_CTA}} <em>{{CONTACT_CTA_EM}}</em>
-      </a>
+    <section id="contact" class="contact" data-checkpoint="Finish">
+      <div class="container">
+        <p class="section-kicker mono reveal">{{CONTACT_KICKER}}</p>
 
-      <div class="contact-links reveal">
+        <a class="contact-cta reveal" href="mailto:{{EMAIL}}">
+          <span class="contact-cta-line">{{CONTACT_CTA}} <em class="serif">{{CONTACT_CTA_EM}}</em></span>
+        </a>
+
+        <p class="contact-note mono reveal">{{CONTACT_NOTE}}</p>
+
+        <div class="contact-links reveal">
 {{CONTACT_LINKS}}
-      </div>
+        </div>
 
-      <footer class="site-footer">
-        <p>© <span data-year></span> {{NAME}}</p>
-        <a class="link back-to-top" href="#top">Back to top ↑</a>
-      </footer>
+        <footer class="site-footer mono">
+          <p>© <span data-year></span> {{NAME_PLAIN}} · {{LOCATION}}</p>
+          <p class="site-footer-coords">{{COORDS}} · {{FOOTER_LICENSE}}</p>
+          <a class="back-to-top" href="#top">Back to the start ↑</a>
+        </footer>
+      </div>
     </section>
 
   </main>
 
+  <!-- Fixed timing strip: live Dubai clock, current checkpoint, distance. -->
+  <div class="telemetry mono" aria-hidden="true">
+    <span class="telemetry-cell"><span class="telemetry-dot">●</span>&nbsp;DXB&nbsp;<span data-clock>--:--:--</span>&nbsp;GST</span>
+    <span class="telemetry-cell telemetry-cell--mid" data-split>START</span>
+    <span class="telemetry-cell"><span data-covered>000</span>%</span>
+  </div>
+
   <div class="grain" aria-hidden="true"></div>
-  <div class="page-transition" aria-hidden="true"></div>
 
 </div>
 

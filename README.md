@@ -1,10 +1,53 @@
-# Denzel — media kit
+# DNZL SZN — media kit
 
-A single-page brand kit and media kit for a hybrid athlete and content creator.
-Dark editorial layout, oversized type, a cursor-reactive particle field, and
-GSAP-driven scroll choreography.
+A single-page media kit for Denzel: hybrid athlete and creator, Dubai.
+Built to be sent to brands.
 
-All the text on the site is edited from one markdown file — no HTML required.
+**Voice.** Everything on the page is written in the first person, because it
+is his site. No em dashes, no marketing filler, and nothing that explains
+the influencer industry back to the brand reading it.
+
+**Design.** Three typographic voices, and colour handled entirely in tokens.
+
+| Voice | Font | Used for |
+|---|---|---|
+| The athlete | Anton | poster-scale display caps |
+| The timing | IBM Plex Mono | data, labels, splits |
+| The soul | Instrument Serif (italic) | faith and human asides |
+
+The racing runs through the page rather than sitting in an intro: a course
+profile across the top that fills as you scroll and ticks off a checkpoint
+at every section, a timing strip along the bottom with live Dubai time and
+the current split, track lane lines behind the hero, bib-tag section
+numbers, a start-list treatment for the work rows, and a chequered finish
+line just before the contact section.
+
+The centrepiece is the **athlete pass**: his photo, bib number, team and UAE
+media licence on a laminated card. Strap and card hang off one rig, so
+moving the pointer swings the whole assembly from its anchor the way a real
+lanyard would, while the card tips on its own axis.
+
+## Choosing the colour scheme
+
+Set `palette:` in the `## Meta` block of `content.md`. Five are built in:
+
+| `palette:` | Look |
+|---|---|
+| `night` | floodlit dark navy, cool white, start-line red (default) |
+| `bib` | white paper, press black, race red. Prints beautifully |
+| `gulf` | ultramarine field, bone type, amber |
+| `blackout` | black and bone, no accent colour. His photos carry it |
+| `sand` | the original warm dusk |
+
+Every colour on the site is a CSS custom property, so a palette swap never
+touches a component rule. Panels (the manifesto, work and contact sections,
+and the "why small wins" band) remap those tokens locally, which is why the
+same rules work on inverted grounds.
+
+While Denzel is choosing, `compare: on` in the same block ships a small
+switcher in the bottom corner so he can try all five on the real page.
+Set it to `off` once he has picked, and put his choice in `palette`.
+`?compare=1` on the URL does the same thing without editing anything.
 
 ## Editing content
 
@@ -20,9 +63,12 @@ Several things are derived automatically so they cannot drift out of sync:
 |---|---|
 | `5.75%` + `count` | count-up target, decimal places, accent-coloured unit |
 | `1,890` + `count` | comma formatting |
-| number of list rows | the `(04)` / `(06)` counts beside headings |
-| `+971 50 917 9493` | the `tel:` link |
-| `Documenting the \| real journey.` | line breaks for the headline animation, plus a screen-reader copy without the marker |
+| benchmark rows | bar widths scaled to the largest value; the row flagged `me` is drawn in the accent |
+| pillar numbers `01` | the Arabic-numeral watermark `٠١` |
+| `palette:` | the `data-palette` attribute and the browser chrome colour |
+| `compare:` | whether the palette switcher ships with the page |
+| `site-url:` | the absolute URL of the Open Graph share image |
+| `+971 50 917 9493` | the `tel:` and `wa.me` links |
 | `male:` / `female:` | split-bar width and its screen-reader label |
 
 ## Running it
@@ -37,33 +83,60 @@ Or build once and serve the output however you like:
 python build.py     # writes index.html
 ```
 
-`index.html` is generated. Edit `content.md` for text, or `template.html` for
-markup — never `index.html` directly.
+`index.html` is generated. Edit `content.md` for text, or `template.html`
+for markup. Never `index.html` directly.
 
 ## Deploying
 
-Run `python build.py`, then publish these:
+Pushing to `main` deploys via GitHub Pages automatically (see
+`.github/workflows/deploy.yml`). The workflow rebuilds `index.html` from
+`content.md`, so editing `content.md` in the GitHub web editor is enough to
+update the live site.
 
-```
-index.html
-styles.css
-main.js
-assets/
-```
+## Handy URLs
 
-The `.py` and `.md` files are only needed for authoring.
+- `?static=1` renders the settled page with no motion. Use it for
+  screenshots, or print it (Ctrl/Cmd+P) to hand a brand the kit as a PDF.
+  A print stylesheet reflows the whole site for paper.
+- `?compare=1` shows the palette switcher without editing `content.md`.
 
 ## Assets
 
-- `assets/denzel.jpg` / `.webp` — portrait, 800×1190
+- `assets/front-page-mobile.jpeg` — athlete-pass photo (DEKA, Etihad Arena)
+- `assets/denzel.jpg` / `.webp` — story portrait, 800×1190
+- `assets/og.jpg` — 1200×630 Open Graph share card
+- `assets/favicon.svg` — browser-tab mark
 - `assets/logos/` — brand logos, referenced by filename from `content.md`.
-  A missing file falls back to the brand name set as a wordmark.
+  These are generated silhouettes, not the original artwork. A missing
+  file falls back to the brand name set as a wordmark.
+- `logo-sources/` — the original logo files, kept out of the deployed site.
+
+### Replacing a logo
+
+Drop the new file into `logo-sources/`, then run:
+
+```bash
+python tools/normalize_logos.py     # needs Pillow
+```
+
+It rewrites `assets/logos/` and keeps the filename, so `content.md` does
+not change. The partner wall has to sit on five different grounds, and the
+logos arrive in three incompatible forms: dark marks on transparency,
+white marks on transparency, and light marks baked onto an opaque coloured
+square. No single CSS filter can reconcile those, so each logo is stored as
+an alpha silhouette instead. One rule then reads correctly everywhere.
+The site build itself never touches images, so GitHub Actions needs no
+extra dependencies.
 
 ## Notes
 
-- Motion respects `prefers-reduced-motion`: all travel and parallax is dropped,
-  but the headline still cross-fades in.
-- If the GSAP CDN is unreachable, the page renders fully visible rather than
-  blank — the entrance states are gated behind a class set only when GSAP loads.
-- Particle field is capped and drawn one depth layer per canvas path, so a
-  ~3,000-particle field costs roughly 1.6 ms a frame.
+- Motion respects `prefers-reduced-motion`: all travel is dropped and the
+  pass stops swinging, but the hero still cross-fades in.
+- The timing strip stays hidden over the opening frame and slides up once
+  you start scrolling, so the first thing a brand sees is uncluttered.
+- If the GSAP CDN is unreachable the page renders fully visible rather than
+  blank. Every entrance state hangs off a class set only when GSAP loads,
+  and the hero waits on the display font with a 1.8 s failsafe.
+- Logos sit at 60% opacity and come up to full on hover, in the page's own
+  foreground colour rather than their brand colours. See above for why.
+- The timing strip clock is Asia/Dubai regardless of the visitor's timezone.
