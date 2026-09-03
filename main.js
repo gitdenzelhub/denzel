@@ -28,7 +28,7 @@
       .querySelectorAll(
         ".reveal, .reel-row, .hero-stack, .hero-eyebrow, .hero-definition," +
         ".hero-intro, .hero-scroll, .pass-scene, .manifesto-lines," +
-        ".manifesto-soul, .bench-fill, .split-fill"
+        ".manifesto-soul, .bench-fill, .split-fill, .hero-field"
       )
       .forEach(function (el) { el.classList.add("is-in"); });
   }
@@ -151,6 +151,242 @@
   measureCourse();
   updateCourse();
 
+  /* ── Hero particle field ─────────────────────────────────── */
+  // Carried over from the original site. The only change is that the two
+  // colours are read from the live palette instead of being hardcoded, so
+  // the dust recolours along with everything else.
+
+  var canvas = document.querySelector(".hero-field");
+  if (canvas && canvas.getContext) {
+    var ctx = canvas.getContext("2d");
+    var particles = [];
+    var w = 0, h = 0, dpr = 1;
+    var raf = null;
+
+    // Resolve a CSS custom property to an "r, g, b" string by letting the
+    // browser do the parsing, which keeps hex, rgb() and rgba() all working.
+    function readToken(name, fallback) {
+      var probe = document.createElement("span");
+      probe.style.cssText = "position:absolute;visibility:hidden;color:var(" + name + ")";
+      document.body.appendChild(probe);
+      var c = window.getComputedStyle(probe).color;
+      document.body.removeChild(probe);
+      var m = /(\d+)[,\s]+(\d+)[,\s]+(\d+)/.exec(c);
+      return m ? m[1] + ", " + m[2] + ", " + m[3] : fallback;
+    }
+
+    var dustRGB = "245, 240, 235";
+    var warmRGB = "255, 122, 64";
+
+    function readPalette() {
+      dustRGB = readToken("--fg", "245, 240, 235");
+      warmRGB = readToken("--accent", "255, 122, 64");
+    }
+    readPalette();
+    document.addEventListener("palettechange", function () {
+      readPalette();
+      if (reduced) drawStill();
+    });
+
+    // Raw pointer, and a smoothed one the field actually chases.
+    var target = { x: -9999, y: -9999 };
+    var pointer = { x: -9999, y: -9999 };
+    var hasPointer = false;
+
+    var REACH = 170;         // cursor influence radius
+    var REACH2 = REACH * REACH;
+
+    // Particles are sorted into depth layers. Drawing one layer as a single
+    // path means ~8 canvas state changes per frame instead of thousands,
+    // which is what makes a field this dense affordable.
+    var LAYERS = 8;
+    var cool = [];   // resting particles, by layer
+    var warm = [];   // particles inside the cursor's reach, by intensity
+    var layerAlpha = [];
+    for (var L = 0; L < LAYERS; L++) {
+      cool.push([]);
+      warm.push([]);
+      layerAlpha.push((0.05 + (L / (LAYERS - 1)) * 0.32).toFixed(3));
+    }
+
+    function resize() {
+      if (window.getComputedStyle(canvas).display === "none") {
+        pause();
+        return;
+      }
+      var rect = canvas.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = rect.width;
+      h = rect.height;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seed();
+    }
+
+    function seed() {
+      // Density scales with area, capped so low-end GPUs stay smooth.
+      var count = Math.min(4200, Math.round((w * h) / 360));
+      particles = [];
+      for (var i = 0; i < count; i++) {
+        // Depth drives size, brightness and drift speed together, so the
+        // field reads as layered dust rather than one flat sheet of dots.
+        var depth = Math.random();
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * (0.05 + depth * 0.2),
+          vy: (Math.random() - 0.5) * (0.05 + depth * 0.2),
+          s: 0.6 + depth * 1.25,
+          L: Math.min(LAYERS - 1, Math.floor(depth * LAYERS))
+        });
+      }
+    }
+
+    function frame() {
+      // Ease the field's idea of the cursor toward the real one.
+      if (hasPointer) {
+        pointer.x += (target.x - pointer.x) * 0.14;
+        pointer.y += (target.y - pointer.y) * 0.14;
+      }
+
+      ctx.clearRect(0, 0, w, h);
+
+      var i, p, b, list, n;
+
+      for (b = 0; b < LAYERS; b++) { cool[b].length = 0; warm[b].length = 0; }
+
+      for (i = 0; i < particles.length; i++) {
+        p = particles[i];
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Wrap at the edges so the field never thins out.
+        if (p.x < -4) p.x = w + 4;
+        if (p.x > w + 4) p.x = -4;
+        if (p.y < -4) p.y = h + 4;
+        if (p.y > h + 4) p.y = -4;
+
+        var heat = 0;
+
+        if (hasPointer) {
+          var dx = p.x - pointer.x;
+          var dy = p.y - pointer.y;
+          var d2 = dx * dx + dy * dy;
+
+          if (d2 < REACH2 && d2 > 0.01) {
+            var d = Math.sqrt(d2);
+            var f = 1 - d / REACH;
+            var nx = dx / d, ny = dy / d;
+            // Push outward, plus a tangential nudge so the field
+            // swirls around the cursor instead of just fleeing it.
+            p.x += nx * f * 2.4 + -ny * f * 1.5;
+            p.y += ny * f * 2.4 + nx * f * 1.5;
+            heat = f;
+          }
+        }
+
+        if (heat > 0.04) warm[Math.min(LAYERS - 1, (heat * LAYERS) | 0)].push(p);
+        else cool[p.L].push(p);
+      }
+
+      // Resting dust, one path per depth layer.
+      for (b = 0; b < LAYERS; b++) {
+        list = cool[b];
+        n = list.length;
+        if (!n) continue;
+        ctx.beginPath();
+        for (i = 0; i < n; i++) { p = list[i]; ctx.rect(p.x, p.y, p.s, p.s); }
+        ctx.fillStyle = "rgba(" + dustRGB + ", " + layerAlpha[b] + ")";
+        ctx.fill();
+      }
+
+      // Everything the cursor is stirring up, brightened toward the accent.
+      for (b = 0; b < LAYERS; b++) {
+        list = warm[b];
+        n = list.length;
+        if (!n) continue;
+        ctx.beginPath();
+        for (i = 0; i < n; i++) {
+          p = list[i];
+          ctx.rect(p.x - 0.35, p.y - 0.35, p.s + 0.7, p.s + 0.7);
+        }
+        ctx.fillStyle = "rgba(" + warmRGB + ", " + (0.14 + (b / (LAYERS - 1)) * 0.62).toFixed(3) + ")";
+        ctx.fill();
+      }
+
+      raf = requestAnimationFrame(frame);
+    }
+
+    function drawStill() {
+      // Reduced motion: draw the field once, then leave it still.
+      ctx.clearRect(0, 0, w, h);
+      for (var b = 0; b < LAYERS; b++) {
+        ctx.beginPath();
+        var drew = false;
+        for (var i = 0; i < particles.length; i++) {
+          var p = particles[i];
+          if (p.L !== b) continue;
+          ctx.rect(p.x, p.y, p.s, p.s);
+          drew = true;
+        }
+        if (!drew) continue;
+        ctx.fillStyle = "rgba(" + dustRGB + ", " + layerAlpha[b] + ")";
+        ctx.fill();
+      }
+    }
+
+    function fieldVisible() {
+      return window.getComputedStyle(canvas).display !== "none";
+    }
+
+    function play() {
+      if (!fieldVisible()) return;
+      if (!raf && !reduced) raf = requestAnimationFrame(frame);
+    }
+    function pause() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+
+    resize();
+    window.addEventListener("resize", function () {
+      pause();
+      resize();
+      if (!fieldVisible()) return;
+      if (reduced) drawStill(); else play();
+    });
+
+    if (reduced) {
+      drawStill();
+    } else {
+      play();
+
+      window.addEventListener("pointermove", function (e) {
+        var rect = canvas.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        if (!hasPointer) { pointer.x = x; pointer.y = y; }   // no jump on first move
+        target.x = x;
+        target.y = y;
+        hasPointer = true;
+      }, { passive: true });
+
+      window.addEventListener("pointerleave", function () {
+        hasPointer = false;
+      }, { passive: true });
+
+      // Stop drawing when the hero has scrolled away or the tab is hidden.
+      window.addEventListener("scroll", function () {
+        var r = canvas.getBoundingClientRect();
+        var onScreen = r.bottom > 0 && r.top < (window.innerHeight || 0);
+        if (onScreen && !document.hidden) play(); else pause();
+      }, { passive: true });
+
+      document.addEventListener("visibilitychange", function () {
+        document.hidden ? pause() : play();
+      });
+    }
+  }
+
   /* ── Footer year ─────────────────────────────────────────── */
 
   var year = document.querySelector("[data-year]");
@@ -183,10 +419,6 @@
     var bar = document.createElement("div");
     bar.className = "palette-bar";
 
-    var name = document.createElement("span");
-    name.className = "palette-bar-name";
-    bar.appendChild(name);
-
     var dots = document.createElement("div");
     dots.className = "palette-dots";
     bar.appendChild(dots);
@@ -204,21 +436,55 @@
       return b;
     });
 
+    // Collapsed by default: one grey arrow, nothing else.
+    var toggle = document.createElement("button");
+    toggle.className = "palette-toggle";
+    toggle.type = "button";
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Choose a colour scheme");
+    toggle.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<polyline points="15 18 9 12 15 6"></polyline></svg>';
+
+    toggle.addEventListener("click", function () {
+      var open = bar.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", String(open));
+    });
+
+    bar.appendChild(toggle);
+
     function choose(p) {
       root.setAttribute("data-palette", p.id);
       try { localStorage.setItem("dnzl-palette", p.id); } catch (e) {}
       var meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.setAttribute("content", p.bg);
-      name.textContent = p.label;
       buttons.forEach(function (b, i) {
         b.setAttribute("aria-pressed", String(PALETTES[i].id === p.id));
       });
+      // The hero dust reads its colours from the palette, so tell it.
+      document.dispatchEvent(new CustomEvent("palettechange"));
     }
 
     var active = PALETTES.filter(function (p) {
       return p.id === root.getAttribute("data-palette");
     })[0] || PALETTES[0];
     choose(active);
+
+    // Clicking anywhere else puts it away again.
+    document.addEventListener("click", function (e) {
+      if (!bar.contains(e.target)) {
+        bar.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        bar.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+      }
+    });
 
     document.body.appendChild(bar);
   }
@@ -283,6 +549,10 @@
   var heroStack = document.querySelector(".hero-stack");
   var heroLines = document.querySelectorAll(".hero-line-inner");
 
+  // Park the lines below their masks before anything can paint them, so the
+  // parent's opacity is the only thing the stylesheet has to hide.
+  if (heroLines.length) gsap.set(heroLines, { yPercent: 112 });
+
   var intro = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
 
   intro
@@ -325,6 +595,8 @@
     ScrollTrigger.refresh();
     measureCourse();
     updateCourse();
+    if (canvas) canvas.classList.add("is-in");
+    if (heroStack) heroStack.classList.add("is-in");
     intro.play();
   }
 
@@ -378,23 +650,29 @@
   /* Manifesto lines climb out of their masks, then the soul line. */
 
   var manifestoLines = document.querySelectorAll(".manifesto-line-inner");
+  var manifestoWrap = document.querySelector(".manifesto-lines");
   if (manifestoLines.length) {
+    gsap.set(manifestoLines, { yPercent: 112 });
+
     gsap.timeline({
-      scrollTrigger: { trigger: ".manifesto", start: "top 62%", once: true }
+      // Triggered on the text itself rather than the section, whose top
+      // padding sits a long way above the first line.
+      scrollTrigger: { trigger: ".manifesto-lines", start: "top 85%", once: true },
+      onStart: function () {
+        if (manifestoWrap) manifestoWrap.classList.add("is-in");
+      }
     })
       .fromTo(manifestoLines,
         { yPercent: 112 },
-        { yPercent: 0, duration: 1, stagger: 0.16, ease: "expo.out",
+        { yPercent: 0, duration: 0.75, stagger: 0.08, ease: "expo.out",
           onComplete: function () {
-            var wrap = document.querySelector(".manifesto-lines");
-            if (wrap) wrap.classList.add("is-in");
             gsap.set(manifestoLines, { clearProps: "transform" });
           } })
       .fromTo(".manifesto-soul",
         { opacity: 0, y: 22 },
         { opacity: 1, y: 0, duration: 0.9, ease: "power3.out",
           onComplete: release(".manifesto-soul", document.querySelector(".manifesto-soul")) },
-        0.55);
+        0.4);
   }
 
   /* Benchmark bars and the audience split grow from the left. */

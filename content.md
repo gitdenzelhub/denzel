@@ -16,7 +16,7 @@ would say it out loud. No em dashes, no marketing filler.
 
 owner: Denzel
 palette: night
-compare: off
+compare: on
 site-url: https://gitdenzelhub.github.io/denzel
 title: Denzel | Hybrid athlete and creator, Dubai
 description: Media kit for Denzel (@dnzlszn). HOKA Middle East athlete in Dubai making gym, running, race day and lifestyle content. 5.75% engagement across 1,890 followers.
@@ -29,9 +29,10 @@ share-text: Hybrid athlete and creator in Dubai. 1,890 people, 5.75% engagement,
   blackout   black and bone, no accent colour
   sand       the original warm sand and flame
 
-`compare: on` shows the small palette switcher in the bottom corner, so
-Denzel can try all five himself. Set it to `off` once he has picked, and
-put his choice in `palette` above.
+`compare: on` puts a small grey arrow in the bottom corner. Clicking it
+opens the five colour swatches, so you can try each scheme on the real
+page. Set it to `off` once you have picked, and put your choice in
+`palette` above.
 
 
 ## Header

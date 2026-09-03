@@ -22,6 +22,11 @@ the current split, track lane lines behind the hero, bib-tag section
 numbers, a start-list treatment for the work rows, and a chequered finish
 line just before the contact section.
 
+Behind the hero sits the cursor-reactive dust field carried over from the
+original site: a few thousand drifting particles across eight depth layers,
+which scatter and swirl around the pointer. It is off on phones, where
+there is no cursor to react to and the battery cost is not worth it.
+
 The centrepiece is the **athlete pass**: his photo, bib number, team and UAE
 media licence on a laminated card. Strap and card hang off one rig, so
 moving the pointer swings the whole assembly from its anchor the way a real
@@ -44,10 +49,12 @@ touches a component rule. Panels (the manifesto, work and contact sections,
 and the "why small wins" band) remap those tokens locally, which is why the
 same rules work on inverted grounds.
 
-While Denzel is choosing, `compare: on` in the same block ships a small
-switcher in the bottom corner so he can try all five on the real page.
-Set it to `off` once he has picked, and put his choice in `palette`.
-`?compare=1` on the URL does the same thing without editing anything.
+While Denzel is choosing, `compare: on` in the same block puts a small grey
+arrow in the bottom corner. Clicking it opens the five colour swatches, and
+clicking anywhere else (or pressing Escape) puts it away. Collapsed by
+default so it never competes with the page. Set it to `off` once he has
+picked, and put his choice in `palette`. `?compare=1` on the URL does the
+same thing without editing anything.
 
 ## Editing content
 
@@ -140,3 +147,7 @@ extra dependencies.
 - Logos sit at 60% opacity and come up to full on hover, in the page's own
   foreground colour rather than their brand colours. See above for why.
 - The timing strip clock is Asia/Dubai regardless of the visitor's timezone.
+- The hero dust reads its two colours from the live palette rather than
+  hardcoding them, so it recolours with everything else. It pauses when the
+  hero scrolls out of view or the tab is hidden, and draws a single still
+  frame under `prefers-reduced-motion`.
