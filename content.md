@@ -123,8 +123,8 @@ Add `count` to make the number tick up when it scrolls into view.
 - UAE   | Home           | Dubai based, racing across the Emirates
 
 split-heading: Audience split
-male: 57.3
-female: 42.7
+male: 60.8
+female: 39.2
 
 
 ## Benchmarks
