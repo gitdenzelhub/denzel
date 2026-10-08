@@ -20,7 +20,7 @@ compare: on
 site-url: https://gitdenzelhub.github.io/denzel
 title: Denzel | Hybrid athlete and creator, Dubai
 description: Media kit for Denzel (@dnzlszn). HOKA Middle East athlete in Dubai making gym, running, race day and lifestyle content. 5.75% engagement across 1,890 followers.
-share-text: Hybrid athlete and creator in Dubai. 1,890 people, 5.75% engagement, six brand partners.
+share-text: Hybrid athlete and creator in Dubai. 2,170 people, 5.75% engagement, eight brand partners.
 
 `palette` picks the colour scheme. Options:
   night      floodlit dark navy, cool white, start-line red
@@ -63,13 +63,13 @@ eyebrow: Hybrid athlete · Creator · Dubai, UAE
 definition-term: szn
 definition-say: /ˈsiː.zən/ noun
 definition-text: Season. As in: on. As in: mine, all year.
-intro: I am a HOKA Middle East athlete based in Dubai. Faith first, performance driven. I document the real work: the early alarms, the racks, the start lines. My people come with me for every rep.
+intro: I am an athlete based in Dubai and have worked with global and home grown brands such as HOKA & LFG. Faith first, performance driven. I document the real work: the early alarms, the racks, the start lines. My people come with me for every rep.
 photo: assets/front-page-mobile.jpeg
 photo-alt: Denzel at Etihad Arena after the DEKA race, wearing a HOKA race shirt
-photo-caption: DEKA · Etihad Arena, Abu Dhabi
+photo-caption: Spartan · Etihad Arena, Abu Dhabi
 scroll: Scroll
 bib: 23616
-pass-team: HOKA Middle East
+pass-team: Spartan AD
 license: UAE media licensed
 
 
@@ -117,7 +117,7 @@ hero-note: 1,890 people follow me and they actually show up. They reply, they sa
 Columns: value | label | note | count
 Add `count` to make the number tick up when it scrolls into view.
 
-- 1,890 | Followers      | Every one of them chose to be here. No bots, no buys. | count
+- 2170 | Followers      | Every one of them chose to be here. No bots, no buys. | count
 - 6     | Brand partners | From global (HOKA) to homegrown (LFG Dubai)           | count
 - 18–34 | Core audience  | Where my content lands hardest
 - UAE   | Home           | Dubai based, racing across the Emirates
@@ -172,7 +172,7 @@ heading: Selected work
 tag: Tap any row to watch
 
 - Lifestyle reel    | Live  | https://www.instagram.com/reel/DQUPkB7CGaE/
-- Workout reel      | Train | https://www.instagram.com/reel/DUOSUa3D220/
+- Workout reel      | Train | https://www.instagram.com/reel/DdOwVFPIT4i/?stkn=MXduOHluOXJwcjBmZg==
 - Wellness reel     | Live  | https://www.instagram.com/reel/DYM27NWINr8/
 - Running vlog reel | Race  | https://www.instagram.com/reel/DPq_5Jej-_n/
 
@@ -216,7 +216,7 @@ photo: assets/denzel.jpg
 photo-webp: assets/denzel.webp
 photo-alt: Denzel, standing against the Dubai skyline at dusk
 photo-caption: Dubai · 25.2048° N, 55.2708° E
-initials: DZ
+initials: DJ
 
 kicker: Why brands work with me
 lede: Authentic connection with my audience, and value oriented storytelling.
