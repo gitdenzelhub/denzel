@@ -33,8 +33,13 @@ PORT = 8900
 
 # The only files the page may write.
 WRITABLE = re.compile(
-    r"^(content\.md|assets/logos/[a-z0-9-]+\.png|logo-sources/[a-z0-9-]+\.(png|jpe?g|webp|gif|svg))$"
+    r"^(content\.md|assets/logos/[a-z0-9-]+\.png|assets/pass/[a-z0-9-]+\.jpg"
+    r"|logo-sources/[a-z0-9-]+\.(png|jpe?g|webp|gif|svg))$"
 )
+
+# Where the page saves images. "Save & preview" writes them before Publish
+# runs, so Publish sends these folders too, not just the files it was handed.
+IMAGE_DIRS = [ROOT / "assets" / "pass", ROOT / "assets" / "logos", ROOT / "logo-sources"]
 
 
 def write_files(files):
@@ -48,6 +53,7 @@ def write_files(files):
         except (KeyError, binascii.Error):
             raise ValueError("A file did not upload properly. Try choosing it again.")
         target = ROOT / path
+        target.parent.mkdir(parents=True, exist_ok=True)
         if target == CONTENT:
             # Text mode, so line endings match the rest of the checkout.
             target.write_text(data.decode("utf-8"), encoding="utf-8")
@@ -114,6 +120,7 @@ class Handler(SimpleHTTPRequestHandler):
             build.build()
             message = "Saved. Check the preview, then Publish."
             if data.get("publish"):
+                changed += [d for d in IMAGE_DIRS if d.exists()]
                 message = publish(changed, data.get("message") or "Update site from the editor")
             self.reply(HTTPStatus.OK, {"message": message})
         except ValueError as exc:

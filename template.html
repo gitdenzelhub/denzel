@@ -89,18 +89,51 @@
 
         <p class="hero-intro">{{HERO_INTRO}}</p>
 
-        <!-- Athlete credential: the media kit as a race-day pass. -->
+        <!-- Athlete credential: the media kit as a race-day pass. Strap, clip
+             and card hang as one rig from far above the hero, and the card
+             also pivots on its clip. main.js swings both. -->
         <div class="pass-scene">
-          <div class="pass-lanyard" aria-hidden="true"></div>
-            <div class="pass" role="img" aria-label="Athlete pass for {{HERO_STACK_PLAIN}}, bib {{BIB}}, {{PASS_TEAM}}, Dubai UAE">
+          <div class="pass-rig">
+            <div class="pass-strap" aria-hidden="true">
+              <span class="pass-strand pass-strand--back"><span>{{STRAP}}</span></span>
+              <span class="pass-strand pass-strand--front"><span>{{STRAP}}</span></span>
+            </div>
+
+            <svg class="pass-clip" viewBox="0 0 40 64" width="40" height="64" aria-hidden="true" focusable="false">
+              <defs>
+                <linearGradient id="pass-metal" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0" stop-color="#7d848f"/>
+                  <stop offset="0.38" stop-color="#f4f6f9"/>
+                  <stop offset="0.62" stop-color="#c2c8d0"/>
+                  <stop offset="1" stop-color="#666e79"/>
+                </linearGradient>
+              </defs>
+              <!-- link between the crimp and the swivel -->
+              <ellipse cx="20" cy="16.5" rx="3.2" ry="4.4" fill="none" stroke="url(#pass-metal)" stroke-width="2"/>
+              <!-- crimp, where the two ends of the strap are pressed together -->
+              <rect x="8" y="1" width="24" height="12" rx="2.5" fill="url(#pass-metal)" stroke="rgba(0,0,0,0.5)" stroke-width="0.8"/>
+              <path d="M11 4.6 H29" stroke="rgba(255,255,255,0.75)" stroke-width="0.8"/>
+              <path d="M11 9.6 H29" stroke="rgba(0,0,0,0.25)" stroke-width="0.8"/>
+              <rect x="16.5" y="20" width="7" height="9.5" rx="2" fill="url(#pass-metal)" stroke="rgba(0,0,0,0.5)" stroke-width="0.8"/>
+              <!-- lobster clasp, its loop through the slot in the card -->
+              <path d="M20 29.5 C13.5 30.5 11 38 11 45.5 C11 54 15 60.5 20 60.5 C25 60.5 29 54 29 45.5 C29 39.5 27.5 34.5 24.5 32" fill="none" stroke="rgba(0,0,0,0.55)" stroke-width="4.4" stroke-linecap="round"/>
+              <path d="M20 29.5 C13.5 30.5 11 38 11 45.5 C11 54 15 60.5 20 60.5 C25 60.5 29 54 29 45.5 C29 39.5 27.5 34.5 24.5 32" fill="none" stroke="url(#pass-metal)" stroke-width="3" stroke-linecap="round"/>
+              <path d="M24.5 32 L21 29.8" stroke="url(#pass-metal)" stroke-width="1.6" stroke-linecap="round"/>
+              <rect x="27.4" y="35.5" width="4.6" height="3.8" rx="1" fill="url(#pass-metal)" stroke="rgba(0,0,0,0.5)" stroke-width="0.7"/>
+            </svg>
+
+            <div class="pass" role="group" aria-label="Athlete pass for {{HERO_STACK_PLAIN}}, bib {{BIB}}, {{PASS_TEAM}}, Dubai UAE">
               <div class="pass-tilt">
                 <div class="pass-head mono" aria-hidden="true">
                   <span>ATHLETE&nbsp;PASS</span>
                   <span class="pass-head-dot">●&nbsp;LIVE</span>
                 </div>
-                <figure class="pass-photo" aria-hidden="true">
-                  <img src="{{HERO_PHOTO}}" alt="" width="1200" height="1600" decoding="async">
-                </figure>
+                <div class="pass-photo" role="group" aria-roledescription="slideshow" aria-label="Photos of {{NAME_PLAIN}}, {{PASS_PHOTO_COUNT}} in all">
+                  <div class="pass-slides">
+{{PASS_SLIDES}}
+                  </div>
+{{PASS_CONTROLS}}
+                </div>
                 <div class="pass-meta" aria-hidden="true">
                   <p class="pass-name">DENZEL</p>
                   <p class="pass-role mono">HYBRID ATHLETE / CREATOR</p>
@@ -114,9 +147,10 @@
                   </div>
                 </div>
                 <div class="pass-barcode" aria-hidden="true"></div>
-                <p class="pass-caption mono" aria-hidden="true">{{HERO_PHOTO_CAPTION}}</p>
+                <p class="pass-caption mono" aria-hidden="true">{{PASS_CAPTION}}</p>
               </div>
             </div>
+          </div>
         </div>
 
         <p class="hero-scroll mono">{{HERO_SCROLL}} <span class="hero-scroll-arrow">↓</span></p>

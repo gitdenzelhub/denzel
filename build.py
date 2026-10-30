@@ -143,6 +143,57 @@ def render_hero_stack(rows):
     return "\n".join(out)
 
 
+# `focus` is a CSS object-position. Anything else falls back to the centre,
+# so a typo in content.md can never inject markup into the style attribute.
+FOCUS = re.compile(r"^\d{1,3}(?:\.\d+)?% \d{1,3}(?:\.\d+)?%$")
+
+
+def pass_photos(sections):
+    rows = [r for r in items(sections, "pass photos") if col(r, 0)]
+    if rows:
+        return rows
+    # Older content.md: one photo set by fields under Hero.
+    return [[
+        field(sections, "hero", "photo", "assets/front-page-mobile.jpeg"),
+        field(sections, "hero", "photo-caption"),
+        field(sections, "hero", "photo-alt"),
+        "50% 18%",
+    ]]
+
+
+def render_pass_slides(rows):
+    out = []
+    for i, row in enumerate(rows):
+        src, caption, alt = col(row, 0), col(row, 1), col(row, 2)
+        focus = col(row, 3) if FOCUS.match(col(row, 3)) else "50% 50%"
+        # Only the first frame competes for bandwidth with the rest of the hero.
+        state = ' class="pass-slide is-active"' if i == 0 else ' class="pass-slide" aria-hidden="true"'
+        load = ' fetchpriority="high"' if i == 0 else ' loading="lazy"'
+        out.append(
+            f'                    <img{state} src="{attr(src)}" alt="{attr(alt)}"\n'
+            f'                         data-caption="{attr(caption)}" style="object-position: {focus}"'
+            f' draggable="false" decoding="async"{load}>'
+        )
+    return "\n".join(out)
+
+
+def render_pass_controls(count):
+    """Split bars and tap zones. A single photo needs neither."""
+    if count < 2:
+        return ""
+    splits = "".join('<span class="pass-split"><i></i></span>' for _ in range(count))
+    return (
+        f'                  <div class="pass-splits" aria-hidden="true">{splits}</div>\n'
+        '                  <button class="pass-nav pass-nav--prev" type="button" aria-label="Previous photo"></button>\n'
+        '                  <button class="pass-nav pass-nav--next" type="button" aria-label="Next photo"></button>'
+    )
+
+
+def render_strap(name):
+    # Printed lanyard webbing: the name, repeated far past the top of the hero.
+    return esc(" ✦ ".join([name] * 18))
+
+
 def render_ticker(rows):
     out = []
     for r in rows:
@@ -393,6 +444,7 @@ def build():
     # Female is whatever male leaves, unless content.md sets it explicitly.
     female = field(s, "numbers", "female") or f"{100 - float(male):g}"
     photo = field(s, "story", "photo", "assets/denzel.jpg")
+    slides = pass_photos(s)
 
     initials = field(s, "story", "initials") or "".join(
         w[0] for w in owner.split() if w
@@ -433,8 +485,11 @@ def build():
         "DEF_SAY": esc(field(s, "hero", "definition-say")),
         "DEF_TEXT": esc(field(s, "hero", "definition-text")),
         "HERO_INTRO": esc(field(s, "hero", "intro")),
-        "HERO_PHOTO": attr(field(s, "hero", "photo", "assets/front-page-mobile.jpeg")),
-        "HERO_PHOTO_CAPTION": esc(field(s, "hero", "photo-caption")),
+        "PASS_SLIDES": render_pass_slides(slides),
+        "PASS_CONTROLS": render_pass_controls(len(slides)),
+        "PASS_CAPTION": esc(col(slides[0], 1)),
+        "PASS_PHOTO_COUNT": str(len(slides)),
+        "STRAP": render_strap(name),
         "HERO_SCROLL": esc(field(s, "hero", "scroll", "Scroll")),
         "BIB": esc(field(s, "hero", "bib", "0000")),
         "PASS_TEAM": esc(field(s, "hero", "pass-team", "")).upper(),

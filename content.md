@@ -64,13 +64,29 @@ definition-term: szn
 definition-say: /ˈsiː.zən/ noun
 definition-text: Season. As in: on. As in: mine, all year.
 intro: I am an athlete based in Dubai and have worked with global and home grown brands such as HOKA & LFG. Faith first, performance driven. I document the real work: the early alarms, the racks, the start lines. My people come with me for every rep.
-photo: assets/front-page-mobile.jpeg
-photo-alt: Denzel at Etihad Arena after the DEKA race, wearing a HOKA race shirt
-photo-caption: Spartan · Etihad Arena, Abu Dhabi
 scroll: Scroll
 bib: 23616
 pass-team: Spartan AD
 license: UAE media licensed
+
+The photos on the pass are listed under Pass photos, just below.
+
+
+## Pass photos
+
+The slideshow on the athlete pass, the card hanging off the lanyard on the
+opening page. One row per photo, shown in this order. The website editor
+can add, reorder and reframe these without touching this file.
+Columns: photo file | caption | description | focus
+
+`caption` is the small line under the barcode. `description` is read out
+by screen readers. `focus` is the part of the photo kept in frame when it
+is cropped to the card, across then down: `50% 0%` keeps the top,
+`50% 100%` keeps the bottom.
+
+- assets/front-page-mobile.jpeg    | Spartan · Etihad Arena, Abu Dhabi | Denzel at Etihad Arena after the DEKA race, wearing a HOKA race shirt      | 50% 18%
+- assets/pass/hyrox-abu-dhabi.jpeg | HYROX · Abu Dhabi                 | Denzel smiling in front of the HYROX wall in Abu Dhabi, in a black LFG kit | 50% 25%
+- assets/pass/deka-medal.jpeg      | DEKA · Finisher medal             | Denzel outside the arena at night in a DEKA shirt, wearing his medal       | 50% 45%
 
 
 ## Ticker

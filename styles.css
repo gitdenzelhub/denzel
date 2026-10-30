@@ -665,26 +665,104 @@ html.gsap :is(.hero-eyebrow, .hero-definition, .hero-intro, .hero-scroll, .pass-
   z-index: 2;
 }
 
-.pass-lanyard {
+/* The rig is strap, clip and card. It swings as one pendulum from a pivot
+   far above the hero (the hero clips the strap long before it gets there).
+   main.js drives the angle; this resting pose is what static renders,
+   print and reduced motion get. */
+.pass-rig {
+  --strap-len: 130vh;
+  --clip-drop: 44px;                 /* strap end to the top of the card */
+  --pivot: calc(var(--strap-len) + var(--clip-drop));
+  position: relative;
+  transform: rotate(0.5deg);
+  transform-origin: 50% calc(-1 * var(--pivot));
+}
+
+/* Woven strap: two ends of one ribbon converging on the crimp. */
+.pass-strap {
   position: absolute;
-  top: -60vh;
   left: 50%;
-  width: 16px;
-  height: 65vh;
-  transform: translateX(-50%);
-  background:
-    repeating-linear-gradient(
-      180deg,
-      var(--fg) 0 14px,
-      var(--accent) 14px 18px
-    );
-  opacity: 0.92;
+  bottom: calc(100% + var(--clip-drop));
+  width: 80px;
+  height: var(--strap-len);
+  margin-left: -40px;
+  pointer-events: none;
+}
+
+.pass-strand {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 15px;
+  height: 100%;
+  margin-left: -7.5px;
+  overflow: hidden;
+  transform-origin: 50% 100%;
+  background-color: var(--accent);
+  background-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.24), transparent 28%, transparent 72%, rgba(0, 0, 0, 0.24)),
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.07) 0 1px, transparent 1px 3px);
+}
+
+.pass-strand--back {
+  transform: translateX(-4.5px) rotate(-1.4deg);
+  filter: brightness(0.74);
+}
+
+.pass-strand--front { transform: translateX(4.5px) rotate(1.4deg); }
+
+/* stitched edges */
+.pass-strand::after {
+  content: "";
+  position: absolute;
+  inset: 0 2px;
+  border-left: 1px dashed color-mix(in srgb, var(--accent-fg) 32%, transparent);
+  border-right: 1px dashed color-mix(in srgb, var(--accent-fg) 32%, transparent);
+}
+
+/* The print runs down one end and back up the other, as on a real lanyard. */
+.pass-strand > span {
+  position: absolute;
+  inset: 0;
+  writing-mode: vertical-rl;
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  line-height: 15px;
+  letter-spacing: 0.24em;
+  white-space: nowrap;
+  color: var(--accent-fg);
+  opacity: 0.88;
+}
+
+.pass-strand--back > span { transform: rotate(180deg); }
+
+.pass-clip {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: calc(100% - 15px);         /* the clasp's loop sits in the slot */
+  width: 40px;
+  height: 64px;
+  margin-left: -20px;
+  overflow: visible;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35));
+  pointer-events: none;
 }
 
 .pass {
-  perspective: 1200px;
+  position: relative;
+  z-index: 1;
   width: clamp(250px, 22vw, 330px);
+  perspective: 1200px;
+  transform: rotate(-1.6deg);
+  transform-origin: 50% 10px;        /* hinged at the slot */
+  cursor: grab;
+  touch-action: pan-y;               /* sideways drags swing it, vertical ones still scroll */
+  -webkit-user-select: none;
+  user-select: none;
 }
+
+.pass.is-dragging { cursor: grabbing; }
 
 .pass-tilt {
   background: var(--paper);
@@ -695,7 +773,7 @@ html.gsap :is(.hero-eyebrow, .hero-definition, .hero-intro, .hero-scroll, .pass-
   box-shadow:
     0 1px 0 rgba(0, 0, 0, 0.2),
     0 24px 60px -18px rgba(0, 0, 0, 0.55);
-  transform: rotate(3deg);
+  transform-origin: 50% 10px;
   transform-style: preserve-3d;
   will-change: transform;
   position: relative;
@@ -707,11 +785,29 @@ html.gsap :is(.hero-eyebrow, .hero-definition, .hero-intro, .hero-scroll, .pass-
   position: absolute;
   top: 7px; left: 50%;
   transform: translateX(-50%);
-  width: 44px; height: 7px;
+  width: 38px; height: 7px;
   border-radius: 99px;
   background: var(--bg);
   border: 1px solid var(--paper-line);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45);
 }
+
+/* Laminate: a soft sheen that slides across as the card tips. */
+.pass-tilt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.22) 48%, transparent 58%);
+  background-size: 260% 100%;
+  background-position: var(--glare, 70%) 0;
+  opacity: 0.5;
+  transition: opacity 0.4s;
+}
+
+.pass:hover .pass-tilt::after { opacity: 1; }
 
 .pass-head {
   display: flex;
@@ -732,20 +828,128 @@ html.gsap :is(.hero-eyebrow, .hero-definition, .hero-intro, .hero-scroll, .pass-
 
 @keyframes blink { 50% { opacity: 0.25; } }
 
+/* ── Pass slideshow ── */
+
 .pass-photo {
+  --slide-time: 5s;
+  position: relative;
   margin-top: 12px;
   border: 1.5px solid var(--paper-fg);
   border-radius: 8px;
   overflow: hidden;
   aspect-ratio: 4 / 4.6;
+  background: var(--paper-fg);
+  isolation: isolate;
 }
 
-.pass-photo img {
+.pass-slide {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 18%;
+  opacity: 0;
+  -webkit-user-drag: none;
+  /* A frame on its way out stays put under the incoming one until that
+     has finished fading in, then quietly resets. */
+  transition: opacity 0s 0.9s, transform 0s 0.9s;
 }
+
+.pass-slide.is-active {
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.9s ease, transform calc(var(--slide-time) + 1s) linear;
+}
+
+/* Slow push-in while a frame is up. Only when the show is running. */
+.pass-photo.is-playing .pass-slide.is-active { transform: scale(1.07); }
+
+/* Split bars, one per photo, filling like a race split. */
+.pass-splits {
+  position: absolute;
+  z-index: 3;
+  top: 9px; left: 9px; right: 9px;
+  display: none;
+  gap: 4px;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.4));
+}
+
+.pass-photo.is-live .pass-splits { display: flex; }
+
+.pass-split {
+  flex: 1;
+  height: 2px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.38);
+}
+
+.pass-split i {
+  display: block;
+  height: 100%;
+  background: #fff;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.pass-split.is-done i,
+.pass-split.is-active i { transform: scaleX(1); }
+
+.pass-photo.is-playing .pass-split.is-active i {
+  animation: pass-split var(--slide-time) linear forwards;
+}
+
+.pass-photo.is-paused .pass-split.is-active i { animation-play-state: paused; }
+
+@keyframes pass-split {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Tap zones, story-style: the left third goes back, the rest goes on. */
+.pass-nav {
+  position: absolute;
+  z-index: 3;
+  top: 0; bottom: 0;
+  display: none;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pass-photo.is-live .pass-nav { display: block; }
+
+.pass-nav--prev { left: 0; width: 34%; }
+.pass-nav--next { right: 0; width: 66%; }
+
+.pass-nav:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+
+.pass-nav::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 28px; height: 28px;
+  margin-top: -14px;
+  border-radius: 50%;
+  background: rgba(8, 10, 14, 0.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 6 15 12 9 18'/%3E%3C/svg%3E") center / 13px no-repeat;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.pass-nav--prev::after { left: 8px; transform: translateX(5px) rotate(180deg); }
+.pass-nav--next::after { right: 8px; transform: translateX(-5px); }
+
+@media (hover: hover) {
+  .pass-nav:hover::after { opacity: 1; }
+  .pass-nav--prev:hover::after { transform: rotate(180deg); }
+  .pass-nav--next:hover::after { transform: none; }
+}
+
+.pass-nav:focus-visible::after { opacity: 1; }
 
 .pass-name {
   margin-top: 12px;
@@ -800,6 +1004,7 @@ html.gsap :is(.hero-eyebrow, .hero-definition, .hero-intro, .hero-scroll, .pass-
   letter-spacing: 0.18em;
   color: var(--paper-soft);
   opacity: 0.7;
+  transition: opacity 0.25s;
 }
 
 /* ── Ticker ────────────────────────────────────────────────── */
@@ -1812,9 +2017,16 @@ html.gsap .split-fill { transform: scaleX(0); }
 
   .hero-eyebrow { order: 1; align-self: flex-start; margin-bottom: 16px; }
   .hero-stack { order: 2; font-size: clamp(96px, 26vw, 170px); }
-  .pass-scene { order: 3; margin-block: 34px 8px; }
+  .pass-scene { order: 3; margin-block: 96px 8px; }
   .pass { width: min(320px, 82vw); }
-  .pass-lanyard { display: none; }
+
+  /* No room for the full drop here: a short run of strap fades out above
+     the clip, while the swing keeps the long pivot. */
+  .pass-rig { --strap-len: 110px; --pivot: 70vh; }
+  .pass-strap {
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 75%);
+    mask-image: linear-gradient(180deg, transparent, #000 75%);
+  }
   .hero-intro { order: 4; margin-top: 18px; }
   .hero-definition { order: 5; margin-top: 22px; }
   .hero-scroll { order: 6; margin-top: 26px; }
@@ -1879,8 +2091,9 @@ html.gsap .split-fill { transform: scaleX(0); }
   .hero-grid { padding-top: 12px; }
   .hero-stack { font-size: 80px; }
   .hero-line:last-child .hero-line-inner { color: #000; }
-  .pass-lanyard { display: none; }
-  .pass-tilt { transform: none; box-shadow: none; }
+  .pass-strap, .pass-clip, .pass-splits, .pass-nav, .pass-tilt::after { display: none !important; }
+  .pass-rig, .pass, .pass-tilt, .pass-slide { transform: none !important; }
+  .pass-tilt { box-shadow: none; }
 
   section, .manifesto, .work, .contact, .value, .offer {
     background: #fff !important;

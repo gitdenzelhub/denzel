@@ -27,10 +27,22 @@ original site: a few thousand drifting particles across eight depth layers,
 which scatter and swirl around the pointer. It is off on phones, where
 there is no cursor to react to and the battery cost is not worth it.
 
-The centrepiece is the **athlete pass**: his photo, bib number, team and UAE
-media licence on a laminated card. Strap and card hang off one rig, so
-moving the pointer swings the whole assembly from its anchor the way a real
-lanyard would, while the card tips on its own axis.
+The centrepiece is the **athlete pass**: a slideshow of his photos, bib
+number, team and UAE media licence on a laminated card, hung from a woven
+lanyard printed with his name by a metal clasp through the card's slot.
+Strap and card swing as one pendulum from far above the hero, and the card
+also pivots on its clip, so it lags and overshoots a touch. It arrives
+swinging, sways slightly in an idle breeze, can be grabbed and flicked, and
+gets nudged by a cursor brushing past. The pointer also tips the card on its
+own axis, sliding a laminate sheen across it.
+
+The photos change every 5 seconds behind split bars, story-style: tap the
+left third of the photo to go back, anywhere else to go on (arrow keys work
+too). The show holds while the pass is hovered, held, keyboard-focused or
+scrolled away. The photos are listed under `## Pass photos` in `content.md`,
+each with a caption, a screen-reader description and a crop point.
+Under `prefers-reduced-motion` and `?static=1` nothing swings and the show
+does not advance on its own.
 
 ## Choosing the colour scheme
 
@@ -59,9 +71,12 @@ same thing without editing anything.
 ## Editing without code
 
 Double-click **`Edit Website.bat`** (Windows) or **`Edit Website.command`**
-(Mac). A page opens in the browser with the follower count, engagement
-rate, audience split, stat boxes, reels, brands and contact details as plain
-form fields. Reels can be added by pasting their Instagram link, given a
+(Mac). A page opens in the browser with the lanyard photos, follower count,
+engagement rate, audience split, stat boxes, reels, brands and contact
+details as plain form fields. Lanyard photos can be added (several at once),
+captioned, reordered, removed and reframed by dragging them inside a
+pass-shaped frame; big photos are shrunk to web size before they are saved
+to `assets/pass/`. Reels can be added by pasting their Instagram link, given a
 caption and pillar, reordered or removed. Brands can be added, removed, reordered and given a logo by
 uploading any PNG, JPG or SVG; the page converts it to the same silhouette
 format the rest of the logo wall uses. **Save & preview** shows the real
@@ -193,7 +208,8 @@ update the live site.
 
 ## Assets
 
-- `assets/front-page-mobile.jpeg` — athlete-pass photo (DEKA, Etihad Arena)
+- `assets/front-page-mobile.jpeg` — first athlete-pass photo (DEKA, Etihad Arena)
+- `assets/pass/` — the other athlete-pass photos, including any added from the editor
 - `assets/denzel.jpg` / `.webp` — story portrait, 800×1190
 - `assets/og.jpg` — 1200×630 Open Graph share card
 - `assets/favicon.svg` — browser-tab mark

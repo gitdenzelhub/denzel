@@ -148,6 +148,29 @@
   .brand .field { margin-bottom: 10px; }
   @media (max-width: 560px) { .brand { grid-template-columns: 1fr; } }
 
+  /* Lanyard photos */
+  .photos { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .photo { border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  .photo.is-new { border-color: var(--accent); }
+  .photo .field { margin-bottom: 10px; }
+  /* Same shape as the photo window on the pass, so the crop is what shows. */
+  .frame {
+    position: relative; aspect-ratio: 4 / 4.6; border-radius: 8px; overflow: hidden;
+    background: var(--night); margin-bottom: 12px; cursor: grab; touch-action: none;
+  }
+  .frame.is-dragging { cursor: grabbing; }
+  .frame img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; user-select: none; }
+  .frame .num {
+    position: absolute; top: 8px; left: 8px; min-width: 24px; padding: 1px 7px; border-radius: 99px;
+    background: rgba(0,0,0,0.6); color: #fff; font-size: 13px; font-weight: 700; text-align: center;
+  }
+  .frame .tip {
+    position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); white-space: nowrap;
+    padding: 3px 9px; border-radius: 99px; background: rgba(0,0,0,0.6); color: #fff; font-size: 12px;
+    pointer-events: none; opacity: 0; transition: opacity 0.2s;
+  }
+  .frame:hover .tip, .frame:focus-visible .tip { opacity: 1; }
+
   /* Bottom bar */
   .bar {
     position: fixed;
@@ -201,6 +224,14 @@
   </section>
 
   <div id="form" hidden>
+  <section>
+    <h2>Lanyard photos</h2>
+    <p class="hint">The slideshow on the athlete pass at the top of the site, shown in this order. Drag a photo to choose which part of it shows on the card. Big photos are shrunk for the web automatically.</p>
+    <div class="photos" id="photos"></div>
+    <p><button id="add-photo" type="button" class="dark">+ Add photos</button></p>
+    <input id="photo-files" type="file" accept="image/*" multiple hidden>
+  </section>
+
   <section>
     <h2>Instagram</h2>
     <p class="hint">Typed once here, used everywhere on the site that mentions them. The count also updates itself from Instagram every Monday.</p>
@@ -302,6 +333,23 @@
   </div>
 </template>
 
+<template id="photo-tpl">
+  <div class="photo">
+    <div class="frame" tabindex="0" aria-label="Photo framing. Drag, or use the arrow keys, to move it.">
+      <img alt="" draggable="false">
+      <span class="num"></span>
+      <span class="tip">Drag to reframe</span>
+    </div>
+    <div class="field"><label>Caption <span class="help">(under the barcode)</span></label><input type="text" data-k="caption"></div>
+    <div class="field"><label>Describe it <span class="help">(for screen readers)</span></label><input type="text" data-k="alt"></div>
+    <div class="brand-actions">
+      <button type="button" class="small" data-act="up" aria-label="Show earlier">←</button>
+      <button type="button" class="small" data-act="down" aria-label="Show later">→</button>
+      <button type="button" class="small danger" data-act="remove">Remove</button>
+    </div>
+  </div>
+</template>
+
 <template id="brand-tpl">
   <div class="brand">
     <div>
@@ -365,6 +413,7 @@ function render(data) {
     a.href = data.liveUrl; a.target = "_blank"; a.textContent = "Open the live site";
     $("#live").appendChild(a);
   }
+  renderPhotos();
   renderStats();
   renderReels();
   renderBrands();
@@ -502,6 +551,104 @@ function renderReels() {
     });
     wrap.appendChild(el);
   });
+}
+
+// ── Lanyard photos ─────────────────────────────────────────────────────
+// `focus` is the CSS object-position the pass uses to crop each photo.
+
+const PHOTO_SIDE = 1600, PHOTO_QUALITY = 0.85;
+const pct = (n) => Math.round(Math.min(100, Math.max(0, n)));
+
+function parseFocus(focus) {
+  const n = String(focus || "").match(/\d+(?:\.\d+)?/g) || [];
+  return n.length >= 2 ? [pct(+n[0]), pct(+n[1])] : [50, 50];
+}
+
+const focusText = ([x, y]) => `${pct(x)}% ${pct(y)}%`;
+
+function renderPhotos() {
+  const wrap = $("#photos");
+  wrap.innerHTML = "";
+  state.photos.forEach((photo, i) => {
+    const el = $("#photo-tpl").content.firstElementChild.cloneNode(true);
+    if (photo.isNew) el.classList.add("is-new");
+    const frame = el.querySelector(".frame");
+    const img = frame.querySelector("img");
+    img.src = photo.upload ? photo.upload.data : "../" + photo.file.split("/").map(encodeURIComponent).join("/");
+    img.style.objectPosition = focusText(parseFocus(photo.focus));
+    el.querySelector(".num").textContent = i + 1;
+    reframe(frame, img, photo);
+
+    el.querySelectorAll("[data-k]").forEach((input) => {
+      input.value = photo[input.dataset.k];
+      input.addEventListener("input", () => { photo[input.dataset.k] = input.value; markDirty(); });
+    });
+    el.querySelector('[data-act="up"]').addEventListener("click", () => move(state.photos, i, -1, renderPhotos));
+    el.querySelector('[data-act="down"]').addEventListener("click", () => move(state.photos, i, 1, renderPhotos));
+    el.querySelector('[data-act="remove"]').addEventListener("click", () => {
+      if (state.photos.length === 1) return setStatus("Keep at least one photo on the lanyard. Add the new one first, then remove this.", "error");
+      if (!confirm(`Remove photo ${i + 1} from the lanyard?`)) return;
+      state.photos.splice(i, 1);
+      renderPhotos(); markDirty();
+    });
+    wrap.appendChild(el);
+  });
+}
+
+// Drag the photo inside its frame, the way a phone crops a profile picture.
+function reframe(frame, img, photo) {
+  let start = null;
+  const apply = (xy) => {
+    photo.focus = focusText(xy);
+    img.style.objectPosition = photo.focus;
+  };
+  // How far the photo overflows the frame, in screen pixels, each way.
+  const spare = () => {
+    const fw = frame.clientWidth, fh = frame.clientHeight;
+    const scale = Math.max(fw / img.naturalWidth, fh / img.naturalHeight);
+    return [img.naturalWidth * scale - fw, img.naturalHeight * scale - fh];
+  };
+  frame.addEventListener("pointerdown", (e) => {
+    if (!img.naturalWidth) return;
+    frame.setPointerCapture(e.pointerId);
+    frame.classList.add("is-dragging");
+    start = { x: e.clientX, y: e.clientY, focus: parseFocus(photo.focus), moved: false };
+  });
+  frame.addEventListener("pointermove", (e) => {
+    if (!start) return;
+    const [sx, sy] = spare();
+    // Dragging the photo right shows more of its left side.
+    apply([
+      sx > 1 ? start.focus[0] - ((e.clientX - start.x) / sx) * 100 : start.focus[0],
+      sy > 1 ? start.focus[1] - ((e.clientY - start.y) / sy) * 100 : start.focus[1],
+    ]);
+    start.moved = true;
+  });
+  const end = () => {
+    if (start && start.moved) markDirty();
+    start = null;
+    frame.classList.remove("is-dragging");
+  };
+  frame.addEventListener("pointerup", end);
+  frame.addEventListener("pointercancel", end);
+  frame.addEventListener("keydown", (e) => {
+    const step = { ArrowLeft: [5, 0], ArrowRight: [-5, 0], ArrowUp: [0, 5], ArrowDown: [0, -5] }[e.key];
+    if (!step) return;
+    e.preventDefault();
+    const [x, y] = parseFocus(photo.focus);
+    apply([x + step[0], y + step[1]]);
+    markDirty();
+  });
+}
+
+async function preparePhoto(file) {
+  const img = await loadImage(await readFile(file));
+  const scale = Math.min(1, PHOTO_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(img.naturalWidth * scale);
+  canvas.height = Math.round(img.naturalHeight * scale);
+  canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+  return { data: canvas.toDataURL("image/jpeg", PHOTO_QUALITY), name: file.name.replace(/\.[^.]*$/, "") };
 }
 
 // ── Logos ──────────────────────────────────────────────────────────────
@@ -690,6 +837,9 @@ function toModel(text) {
     })),
     reels: itemsOf(s, "work").map((r) => ({ title: col(r, 0), pillar: col(r, 1), url: col(r, 2) })),
     pillars: itemsOf(s, "pillars").map((r) => col(r, 1)),
+    photos: itemsOf(s, "pass photos").map((r) => ({
+      file: col(r, 0), caption: col(r, 1), alt: col(r, 2), focus: col(r, 3) || "50% 50%",
+    })),
     brands: itemsOf(s, "partners").map((r) => ({ name: col(r, 0), logo: col(r, 1), url: col(r, 2) })),
     contact: Object.fromEntries(["email", "phone", "whatsapp"].map((k) => [k, fieldOf(s, "contact", k)])),
     liveUrl: fieldOf(s, "meta", "site-url"),
@@ -751,6 +901,21 @@ function applyForm(text, form) {
   }
   if (!brands.length) throw new Error("Keep at least one brand on the list.");
   text = setRows(text, "partners", brands);
+
+  const photos = [];
+  for (const photo of form.photos) {
+    let file = clean(photo.file);
+    if (photo.upload) {
+      // A fresh name every time, so a new photo never replaces an old one.
+      const stem = slug(photo.upload.name).slice(0, 40).replace(/-+$/, "") || "photo";
+      file = `assets/pass/${stem}-${Date.now().toString(36)}${photos.length}.jpg`;
+      files.push({ path: file, base64: photo.upload.data.split(",")[1] });
+    }
+    if (!file) continue;
+    photos.push([file, clean(photo.caption), clean(photo.alt), focusText(parseFocus(photo.focus))]);
+  }
+  if (!photos.length) throw new Error("Keep at least one photo on the lanyard.");
+  text = setRows(text, "pass photos", photos);
 
   for (const key of ["email", "phone", "whatsapp"]) {
     text = setField(text, "contact", key, clean(form.contact[key]));
@@ -876,6 +1041,7 @@ function collect() {
     stats: state.stats,
     reels: state.reels,
     brands: state.brands,
+    photos: state.photos,
     contact: { email: $("#email").value, phone: $("#phone").value, whatsapp: $("#whatsapp").value },
   };
 }
@@ -954,6 +1120,25 @@ $("#add-reel").addEventListener("click", () => {
   renderReels(); markDirty();
   const cards = document.querySelectorAll(".reel");
   cards[cards.length - 1].querySelector('[data-k="title"]').focus();
+});
+
+$("#add-photo").addEventListener("click", () => $("#photo-files").click());
+$("#photo-files").addEventListener("change", async (e) => {
+  const chosen = [...e.target.files];
+  e.target.value = "";
+  let added = 0, failed = "";
+  for (const file of chosen) {
+    try {
+      const upload = await preparePhoto(file);
+      state.photos.push({ file: "", caption: "", alt: "", focus: "50% 50%", upload, isNew: true });
+      added++;
+    } catch (err) {
+      failed = `${file.name}: ${err.message}`;
+    }
+  }
+  renderPhotos();
+  if (added) markDirty();
+  if (failed) setStatus(failed, "error");
 });
 
 $("#preview").addEventListener("click", () => save(false));
