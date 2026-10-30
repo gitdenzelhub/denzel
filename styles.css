@@ -676,6 +676,9 @@ html.gsap :is(.hero-eyebrow, .hero-definition, .hero-intro, .hero-scroll, .pass-
   position: relative;
   transform: rotate(0.5deg);
   transform-origin: 50% calc(-1 * var(--pivot));
+  /* Its own layer, so swinging it every frame is a cheap composite rather
+     than a repaint of the whole strap and card, which starved the dust. */
+  will-change: transform;
 }
 
 /* Woven strap: two ends of one ribbon converging on the crimp. */
@@ -736,9 +739,10 @@ html.gsap :is(.hero-eyebrow, .hero-definition, .hero-intro, .hero-scroll, .pass-
 
 .pass-strand--back > span { transform: rotate(180deg); }
 
+/* Behind the card: the clasp drops out of sight through the slot. */
 .pass-clip {
   position: absolute;
-  z-index: 2;
+  z-index: 0;
   left: 50%;
   bottom: calc(100% - 15px);         /* the clasp's loop sits in the slot */
   width: 40px;
@@ -756,6 +760,7 @@ html.gsap :is(.hero-eyebrow, .hero-definition, .hero-intro, .hero-scroll, .pass-
   perspective: 1200px;
   transform: rotate(-1.6deg);
   transform-origin: 50% 10px;        /* hinged at the slot */
+  will-change: transform;
   cursor: grab;
   touch-action: pan-y;               /* sideways drags swing it, vertical ones still scroll */
   -webkit-user-select: none;
