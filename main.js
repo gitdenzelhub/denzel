@@ -603,7 +603,7 @@
   /* Lanyard physics. Two damped springs: the strap's swing about its far
      pivot, and the card's about its clip, driven by the strap's
      acceleration. Grab the card to swing it, brush past it to nudge it, and
-     a slow breeze keeps it from ever hanging dead still. */
+     swing slow breeze keeps it from ever hanging dead still. */
 
   if (scene && rig && pass && !still) {
     var SWING_K = 12;       // strap stiffness: a 1.8 s period, like a real lanyard
@@ -615,8 +615,8 @@
     var MAX_FLICK = 60;     // degrees per second it can be let go at
 
     // Start from the resting pose styles.css paints, so nothing jumps.
-    var a = 0.5, v = 0;     // strap angle and angular velocity, degrees
-    var b = -1.6, w = 0;    // card angle on its clip
+    var swing = 0.5, swingV = 0;   // strap angle and angular velocity, degrees
+    var tip = -1.6, tipV = 0;      // card angle on its clip
     var acc = 0;
     var clock = 0, last = 0, loop = null;
     var onScreen = true;
@@ -632,22 +632,22 @@
       if (drag) {
         // Held: the strap follows the hand, and carries the hand's speed
         // away with it on release.
-        var vNext = v + ((drag.target - a) / dt - v) * 0.3;
-        acc = (vNext - v) / dt;
-        v = vNext;
-        a = drag.target;
+        var vNext = swingV + ((drag.target - swing) / dt - swingV) * 0.3;
+        acc = (vNext - swingV) / dt;
+        swingV = vNext;
+        swing = drag.target;
       } else {
         var breeze = 3 * Math.sin(clock * 1.03) + 1.8 * Math.sin(clock * 1.71 + 1.3);
-        acc = -SWING_K * a - SWING_C * v + breeze;
-        v += acc * dt;
-        a += v * dt;
+        acc = -SWING_K * swing - SWING_C * swingV + breeze;
+        swingV += acc * dt;
+        swing += swingV * dt;
       }
 
-      w += (-CARD_K * b - CARD_C * w - CARD_LAG * clamp(acc, -900, 900)) * dt;
-      b += w * dt;
+      tipV += (-CARD_K * tip - CARD_C * tipV - CARD_LAG * clamp(acc, -900, 900)) * dt;
+      tip += tipV * dt;
 
-      rig.style.transform = "rotate(" + a.toFixed(3) + "deg)";
-      pass.style.transform = "rotate(" + b.toFixed(3) + "deg)";
+      rig.style.transform = "rotate(" + swing.toFixed(3) + "deg)";
+      pass.style.transform = "rotate(" + tip.toFixed(3) + "deg)";
     };
 
     var run = function () {
@@ -656,7 +656,7 @@
       if (!go && loop) { cancelAnimationFrame(loop); loop = null; }
     };
 
-    kickPass = function () { v -= 10; };
+    kickPass = function () { swingV -= 10; };
 
     // The pivot, in viewport pixels. Read from the untransformed layout box
     // plus the CSS transform-origin, so it is right mid-swing too.
@@ -678,14 +678,14 @@
     pass.addEventListener("pointerdown", function (e) {
       if (e.button !== 0) return;
       var p = pivot();
-      pending = { id: e.pointerId, x: e.clientX, y: e.clientY, p: p, a0: a, b0: bearing(p, e) };
+      pending = { id: e.pointerId, x: e.clientX, y: e.clientY, p: p, a0: swing, b0: bearing(p, e) };
     });
 
     pass.addEventListener("pointermove", function (e) {
       if (pending && !drag && e.pointerId === pending.id &&
           Math.abs(e.clientX - pending.x) + Math.abs(e.clientY - pending.y) > 6) {
         drag = pending;
-        drag.target = a;
+        drag.target = swing;
         try { pass.setPointerCapture(e.pointerId); } catch (err) {}
         pass.classList.add("is-dragging");
         hold("drag", true);
@@ -699,7 +699,7 @@
       if (pending && e.pointerId === pending.id) pending = null;
       if (!drag || e.pointerId !== drag.id) return;
       drag = null;
-      v = clamp(v, -MAX_FLICK, MAX_FLICK);
+      swingV = clamp(swingV, -MAX_FLICK, MAX_FLICK);
       pass.classList.remove("is-dragging");
       hold("drag", false);
       // The click that follows a drag is not a tap on the photo.
@@ -724,7 +724,7 @@
         var dx = e.clientX - (r.left + r.width / 2);
         var dy = e.clientY - (r.top + r.height / 2);
         var reach = 1 - Math.sqrt(dx * dx + dy * dy) / 340;
-        if (reach > 0) v = clamp(v - (e.clientX - lastX) * reach * 0.03, -MAX_FLICK, MAX_FLICK);
+        if (reach > 0) swingV = clamp(swingV - (e.clientX - lastX) * reach * 0.03, -MAX_FLICK, MAX_FLICK);
       }
       lastX = e.clientX;
     }, { passive: true });
