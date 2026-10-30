@@ -1,0 +1,3 @@
+# Double-click launchers need their native line endings.
+*.command text eol=lf
+*.bat text eol=crlf

@@ -2,7 +2,7 @@
    Interaction layer — DNZL SZN
    - GSAP entrance choreography, held until the display font lands
    - scroll-triggered reveals, counters, benchmark bars
-   - athlete pass: strap and card swing together off one rig
+   - athlete pass: lanyard physics, pointer tilt, photo slideshow
    - course profile: scroll progress with a tick at every checkpoint
    - live Dubai clock and current split in the timing strip
    Hidden entrance states live behind the `gsap` class set in the
@@ -489,36 +489,276 @@
     document.body.appendChild(bar);
   }
 
-  /* ── Athlete pass: the whole rig swings ──────────────────── */
-  // rig  → left/right pointer swings strap and card together
-  // card → up/down pointer tips the card on its own axis
+  /* ── Athlete pass ────────────────────────────────────────── */
+  // rig   → strap, clip and card swing as one pendulum from far above
+  // card  → hinged at its clip, so it lags and overshoots the strap a touch
+  // tilt  → the pointer tips the card on its own axis
+  // photo → a slideshow, story-style
 
+  var still = reduced || /[?&]static=1/.test(location.search);
+  var scene = document.querySelector(".pass-scene");
+  var rig = document.querySelector(".pass-rig");
   var pass = document.querySelector(".pass");
   var passTilt = document.querySelector(".pass-tilt");
+  var kickPass = function () {};
+
+  function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
+
+  /* Slideshow. Split bars fill across the top of the photo; tap the left
+     third to go back and anywhere else to go on. It holds while the pass is
+     hovered, held, keyboard-focused or off screen. */
+
+  var photo = document.querySelector(".pass-photo");
+  var slides = photo ? [].slice.call(photo.querySelectorAll(".pass-slide")) : [];
+  var splits = photo ? [].slice.call(photo.querySelectorAll(".pass-split")) : [];
+  var caption = document.querySelector(".pass-caption");
+  var holds = {};
+  var hold = function () {};
+
+  if (slides.length > 1) {
+    var current = 0;
+    photo.classList.add("is-live");
+    if (!still) photo.classList.add("is-playing");
+
+    hold = function (reason, on) {
+      holds[reason] = on;
+      photo.classList.toggle("is-paused", Object.keys(holds).some(function (k) { return holds[k]; }));
+    };
+
+    var show = function (i, dir, tries) {
+      var n = (i + slides.length) % slides.length;
+      var img = slides[n];
+      dir = dir || 1;
+      tries = tries || 0;
+
+      // Skip a photo that failed to load rather than fade to a blank frame.
+      if (img.complete && !img.naturalWidth && tries < slides.length) {
+        return show(n + dir, dir, tries + 1);
+      }
+      // And never cut to one that has not arrived yet.
+      if (!img.complete) {
+        img.loading = "eager";
+        img.addEventListener("load", function () { show(n, dir); }, { once: true });
+        img.addEventListener("error", function () { show(n + dir, dir, tries + 1); }, { once: true });
+        return;
+      }
+
+      var changed = n !== current;
+      current = n;
+      slides.forEach(function (s, k) {
+        s.classList.toggle("is-active", k === n);
+        if (k === n) s.removeAttribute("aria-hidden");
+        else s.setAttribute("aria-hidden", "true");
+      });
+      splits.forEach(function (s, k) {
+        s.classList.remove("is-active");
+        s.classList.toggle("is-done", k < n);
+      });
+      void photo.offsetWidth;   // restart the fill even when it is the same bar
+      if (splits[n]) splits[n].classList.add("is-active");
+
+      if (caption && changed) {
+        caption.style.opacity = "0";
+        setTimeout(function () {
+          caption.textContent = img.getAttribute("data-caption") || "";
+          caption.style.opacity = "";
+        }, 200);
+      }
+    };
+
+    show(0);
+
+    photo.addEventListener("animationend", function (e) {
+      if (splits[current] && e.target.parentNode === splits[current]) show(current + 1);
+    });
+
+    photo.querySelector(".pass-nav--prev").addEventListener("click", function () { show(current - 1, -1); });
+    photo.querySelector(".pass-nav--next").addEventListener("click", function () { show(current + 1); });
+
+    photo.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft") { show(current - 1, -1); e.preventDefault(); }
+      if (e.key === "ArrowRight") { show(current + 1); e.preventDefault(); }
+    });
+
+    if (pass) {
+      pass.addEventListener("pointerenter", function (e) {
+        if (e.pointerType === "mouse") hold("hover", true);
+      });
+      pass.addEventListener("pointerleave", function (e) {
+        if (e.pointerType === "mouse") hold("hover", false);
+      });
+      // Keyboard focus only. A mouse click also focuses the button, and
+      // that should not stop the show for good.
+      pass.addEventListener("focusin", function (e) {
+        var keyboard = true;
+        try { keyboard = e.target.matches(":focus-visible"); } catch (err) {}
+        hold("focus", keyboard);
+      });
+      pass.addEventListener("focusout", function (e) {
+        if (!pass.contains(e.relatedTarget)) hold("focus", false);
+      });
+    }
+  }
+
+  /* Lanyard physics. Two damped springs: the strap's swing about its far
+     pivot, and the card's about its clip, driven by the strap's
+     acceleration. Grab the card to swing it, brush past it to nudge it, and
+     a slow breeze keeps it from ever hanging dead still. */
+
+  if (scene && rig && pass && !still) {
+    var SWING_K = 12;       // strap stiffness: a 1.8 s period, like a real lanyard
+    var SWING_C = 0.75;     // strap damping: a flick dies away in five or six swings
+    var CARD_K = 80;        // the card on its clip swings about twice as fast
+    var CARD_C = 3.4;
+    var CARD_LAG = 1.1;     // how far the strap's acceleration throws the card
+    var MAX_PULL = 20;      // degrees the strap can be dragged out
+    var MAX_FLICK = 60;     // degrees per second it can be let go at
+
+    // Start from the resting pose styles.css paints, so nothing jumps.
+    var a = 0.5, v = 0;     // strap angle and angular velocity, degrees
+    var b = -1.6, w = 0;    // card angle on its clip
+    var acc = 0;
+    var clock = 0, last = 0, loop = null;
+    var onScreen = true;
+    var pending = null, drag = null, dragged = false;
+
+    var step = function (now) {
+      var dt = last ? Math.min(0.032, (now - last) / 1000) : 0;
+      last = now;
+      loop = requestAnimationFrame(step);
+      if (!dt) return;
+      clock += dt;
+
+      if (drag) {
+        // Held: the strap follows the hand, and carries the hand's speed
+        // away with it on release.
+        var vNext = v + ((drag.target - a) / dt - v) * 0.3;
+        acc = (vNext - v) / dt;
+        v = vNext;
+        a = drag.target;
+      } else {
+        var breeze = 3 * Math.sin(clock * 1.03) + 1.8 * Math.sin(clock * 1.71 + 1.3);
+        acc = -SWING_K * a - SWING_C * v + breeze;
+        v += acc * dt;
+        a += v * dt;
+      }
+
+      w += (-CARD_K * b - CARD_C * w - CARD_LAG * clamp(acc, -900, 900)) * dt;
+      b += w * dt;
+
+      rig.style.transform = "rotate(" + a.toFixed(3) + "deg)";
+      pass.style.transform = "rotate(" + b.toFixed(3) + "deg)";
+    };
+
+    var run = function () {
+      var go = onScreen && !document.hidden;
+      if (go && !loop) { last = 0; loop = requestAnimationFrame(step); }
+      if (!go && loop) { cancelAnimationFrame(loop); loop = null; }
+    };
+
+    kickPass = function () { v -= 10; };
+
+    // The pivot, in viewport pixels. Read from the untransformed layout box
+    // plus the CSS transform-origin, so it is right mid-swing too.
+    var pivot = function () {
+      var s = scene.getBoundingClientRect();
+      var origin = window.getComputedStyle(rig).transformOrigin.split(" ");
+      return {
+        x: s.left + rig.offsetLeft + parseFloat(origin[0]),
+        y: s.top + rig.offsetTop + parseFloat(origin[1])
+      };
+    };
+
+    // Angle of the pointer seen from the pivot. A clockwise strap moves the
+    // card left, hence the minus where this is used.
+    var bearing = function (p, e) {
+      return Math.atan2(e.clientX - p.x, e.clientY - p.y) * 180 / Math.PI;
+    };
+
+    pass.addEventListener("pointerdown", function (e) {
+      if (e.button !== 0) return;
+      var p = pivot();
+      pending = { id: e.pointerId, x: e.clientX, y: e.clientY, p: p, a0: a, b0: bearing(p, e) };
+    });
+
+    pass.addEventListener("pointermove", function (e) {
+      if (pending && !drag && e.pointerId === pending.id &&
+          Math.abs(e.clientX - pending.x) + Math.abs(e.clientY - pending.y) > 6) {
+        drag = pending;
+        drag.target = a;
+        try { pass.setPointerCapture(e.pointerId); } catch (err) {}
+        pass.classList.add("is-dragging");
+        hold("drag", true);
+      }
+      if (drag && e.pointerId === drag.id) {
+        drag.target = clamp(drag.a0 - (bearing(drag.p, e) - drag.b0), -MAX_PULL, MAX_PULL);
+      }
+    });
+
+    var letGo = function (e) {
+      if (pending && e.pointerId === pending.id) pending = null;
+      if (!drag || e.pointerId !== drag.id) return;
+      drag = null;
+      v = clamp(v, -MAX_FLICK, MAX_FLICK);
+      pass.classList.remove("is-dragging");
+      hold("drag", false);
+      // The click that follows a drag is not a tap on the photo.
+      dragged = true;
+      setTimeout(function () { dragged = false; }, 0);
+    };
+
+    pass.addEventListener("pointerup", letGo);
+    pass.addEventListener("pointercancel", letGo);
+    pass.addEventListener("dragstart", function (e) { e.preventDefault(); });
+    pass.addEventListener("click", function (e) {
+      if (dragged) { e.stopPropagation(); e.preventDefault(); }
+    }, true);
+
+    // A mouse brushing past nudges it, by distance moved rather than speed,
+    // so the push does not depend on how often the browser reports moves.
+    var lastX = null;
+    window.addEventListener("pointermove", function (e) {
+      if (e.pointerType !== "mouse" || drag || !loop) { lastX = null; return; }
+      if (lastX !== null) {
+        var r = pass.getBoundingClientRect();
+        var dx = e.clientX - (r.left + r.width / 2);
+        var dy = e.clientY - (r.top + r.height / 2);
+        var reach = 1 - Math.sqrt(dx * dx + dy * dy) / 340;
+        if (reach > 0) v = clamp(v - (e.clientX - lastX) * reach * 0.03, -MAX_FLICK, MAX_FLICK);
+      }
+      lastX = e.clientX;
+    }, { passive: true });
+
+    document.addEventListener("visibilitychange", run);
+    run();
+  }
+
+  // Both the swing and the slideshow rest while the hero is scrolled away.
+  if (scene && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries) {
+      onScreen = entries[0].isIntersecting;
+      hold("away", !onScreen);
+      if (typeof run === "function") run();
+    }).observe(scene);
+  }
+
+  /* Pointer tilt, plus the laminate sheen that follows it. */
 
   if (hasGSAP && pass && passTilt &&
       window.matchMedia("(hover: hover)").matches && !reduced) {
-    gsap.set(passTilt, { rotation: 3, transformPerspective: 900 });
+    gsap.set(passTilt, { transformPerspective: 900, transformOrigin: "50% 10px" });
 
     var toRX = gsap.quickTo(passTilt, "rotationX", { duration: 0.5, ease: "power2.out" });
     var toRY = gsap.quickTo(passTilt, "rotationY", { duration: 0.5, ease: "power2.out" });
 
-    // A slow idle sway on the z-rotation keeps the card feeling hung,
-    // while the pointer drives X/Y independently.
-    gsap.to(passTilt, {
-      rotation: 4.2,
-      duration: 2.6,
-      yoyo: true,
-      repeat: -1,
-      ease: "sine.inOut"
-    });
-
     pass.addEventListener("pointermove", function (e) {
+      if (e.pointerType !== "mouse") return;
       var r = pass.getBoundingClientRect();
-      var px = (e.clientX - r.left) / r.width - 0.5;
-      var py = (e.clientY - r.top) / r.height - 0.5;
+      var px = clamp((e.clientX - r.left) / r.width - 0.5, -0.5, 0.5);
+      var py = clamp((e.clientY - r.top) / r.height - 0.5, -0.5, 0.5);
       toRY(px * 14);
-      toRX(py * -12);
+      toRX(py * -10);
+      passTilt.style.setProperty("--glare", (70 - px * 80).toFixed(1) + "%");
     });
 
     pass.addEventListener("pointerleave", function () {
@@ -571,8 +811,9 @@
         onComplete: release(".hero-eyebrow", document.querySelector(".hero-eyebrow")) },
       0.3)
     .fromTo(".pass-scene",
-      { opacity: 0, y: 44, rotate: 2 },
-      { opacity: 1, y: 0, rotate: 0, duration: 1.1, ease: "power4.out",
+      { opacity: 0, y: 44 },
+      { opacity: 1, y: 0, duration: 1.1, ease: "power4.out",
+        onStart: kickPass,   // it arrives swinging, then settles on the strap
         onComplete: release(".pass-scene", document.querySelector(".pass-scene")) },
       0.55)
     .fromTo([".hero-intro", ".hero-definition", ".hero-scroll"],

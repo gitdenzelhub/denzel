@@ -6,3 +6,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Instagram API token for tools/update_followers.py. Never commit it.
+instagram-token.txt
