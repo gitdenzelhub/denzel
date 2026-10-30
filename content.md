@@ -19,8 +19,8 @@ palette: night
 compare: on
 site-url: https://gitdenzelhub.github.io/denzel
 title: Denzel | Hybrid athlete and creator, Dubai
-description: Media kit for Denzel (@dnzlszn). HOKA Middle East athlete in Dubai making gym, running, race day and lifestyle content. 5.75% engagement across 1,890 followers.
-share-text: Hybrid athlete and creator in Dubai. 2,170 people, 5.75% engagement, eight brand partners.
+description: Media kit for Denzel (@dnzlszn). HOKA Middle East athlete in Dubai making gym, running, race day and lifestyle content. {engagement}% engagement across {followers} followers.
+share-text: Hybrid athlete and creator in Dubai. {followers} people, {engagement}% engagement, {partners} brand partners.
 
 `palette` picks the colour scheme. Options:
   night      floodlit dark navy, cool white, start-line red
@@ -107,24 +107,41 @@ soul: Discipline is just faith with a training plan.
 heading: The numbers
 tag: @dnzlszn on Instagram
 
+The follower count. Write it once here and it is filled in everywhere else
+on the site that says {followers}. `python tools/update_followers.py` sets it
+straight from Instagram.
+
+followers: 2250
+followers-minimum: 2250
+
+The site never shows fewer than `followers-minimum`, even if the real count
+dips below it.
+
+Anywhere on this page you can write these and the build fills them in:
+  {followers}        2,250   the count above, or the minimum if higher
+  {followers-over}   2,000   rounded down, for "over 2,000 people"
+  {engagement}       5.75    the hero-value below
+  {partners}         8       how many brands are listed under Partners
+
 The big headline stat, shown first at full width.
 
 hero-value: 5.75
 hero-unit: %
 hero-label: Engagement rate
-hero-note: 1,890 people follow me and they actually show up. They reply, they save, they ask what I am wearing and what I am taking. That is the number I care about.
+hero-note: Over {followers-over} people follow me and they actually show up. They reply, they save, they ask what I am wearing and what I am taking. That is the number I care about.
 
 Columns: value | label | note | count
 Add `count` to make the number tick up when it scrolls into view.
 
-- 2170 | Followers      | Every one of them chose to be here. No bots, no buys. | count
-- 6     | Brand partners | From global (HOKA) to homegrown (LFG Dubai)           | count
-- 18–34 | Core audience  | Where my content lands hardest
-- UAE   | Home           | Dubai based, racing across the Emirates
+- {followers} | Followers      | Every one of them chose to be here. No bots, no buys. | count
+- {partners}  | Brand partners | From global (HOKA) to homegrown (LFG Dubai)           | count
+- 18–34       | Core audience  | Where my content lands hardest
+- UAE         | Home           | Dubai based, racing across the Emirates
 
 split-heading: Audience split
-male: 60.8
-female: 39.2
+male: 69.1
+
+Female is worked out from male automatically (100 minus male).
 
 
 ## Benchmarks
@@ -135,7 +152,7 @@ Put `me` in the third column on the row that is his, to draw it in the accent.
 - Instagram influencer average | 1.85
 - Nano creator average (1–10k) | 2.19
 - Strong performance           | 3.00
-- Me                           | 5.75 | me
+- Me                           | {engagement} | me
 
 
 ## Value
@@ -146,8 +163,8 @@ Columns: figure | text | supporting line
 heading: Why small wins
 tag: What you get
 
-- 3×   | My audience engages at roughly three times the Instagram average. When I post about something, people reply and ask me where to get it. | 5.75% engagement against a 1.85% platform average
-- 100% | Everything I post, I use. I train in it, race in it or eat it. If it does not hold up in a session, it does not go on my feed. | HOKA, Fast&Up, Fitness Nation, Ritz, OMA, LFG
+- 3×   | My audience engages at roughly three times the Instagram average. When I post about something, people reply and ask me where to get it. | {engagement}% engagement against a 1.85% platform average
+- 100% | Everything I post, I use. I train in it, race in it or eat it. If it does not hold up in a session, it does not go on my feed. | HOKA, MyProtein, Tim Hortons, Fast&Up, Fitness Nation, Ritz, OMA, LFG
 - UAE  | I am here on the ground. Store launches, race weekends, gym openings: I can be in the room, not sending content from another timezone. | Dubai based. DEKA at Etihad Arena, Abu Dhabi
 
 
@@ -175,6 +192,7 @@ tag: Tap any row to watch
 - Workout reel      | Train | https://www.instagram.com/reel/DdOwVFPIT4i/?stkn=MXduOHluOXJwcjBmZg==
 - Wellness reel     | Live  | https://www.instagram.com/reel/DYM27NWINr8/
 - Running vlog reel | Race  | https://www.instagram.com/reel/DPq_5Jej-_n/
+- Edit reel         | Live  | https://www.instagram.com/reel/Db-6A3yqDaS/
 
 instagram: dnzlszn
 
@@ -188,12 +206,14 @@ second column blank, the brand name is shown as a wordmark instead.
 heading: Worked with
 tag: Global and homegrown
 
-- HOKA              | hoka.png                 | https://www.hoka.com/
-- Fitness Nation    | fitness-nation.png       | https://fitnessnation.ae/
-- Ritz Fitness Club | ritz-fitness-club.png    | https://ritzfitnessclub.com/
-- OMA               | oma.png                  | https://tasteoma.com/
-- LFG               | lfg.png                  | https://www.instagram.com/lfgdubai/
-- Fast&Up           | fast-and-up.png          | https://uae.fastandup.com/
+- HOKA              | hoka.png              | https://www.hoka.com/
+- Fitness Nation    | fitness-nation.png    | https://fitnessnation.ae/
+- Ritz Fitness Club | ritz-fitness-club.png | https://ritzfitnessclub.com/
+- OMA               | oma.png               | https://tasteoma.com/
+- LFG               | lfg.png               | https://www.instagram.com/lfgdubai/
+- Fast&Up           | fast-and-up.png       | https://uae.fastandup.com/
+- MyProtein         | myprotein.png         | https://www.myprotein.ae/
+- Tim Hortons       | tim-hortons.png       | https://timhortons.ae/
 
 
 ## Offer

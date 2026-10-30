@@ -59,6 +59,50 @@ def parse(text):
     return sections
 
 
+# ── Placeholders ─────────────────────────────────────────────────────────
+# A handful of figures appear in several places (the follower count is in
+# the share text, the headline note and the stat grid). They are written
+# once in content.md and dropped in anywhere else as `{name}`, so updating
+# one line updates the whole site.
+
+PLACEHOLDER = re.compile(r"\{([a-z][a-z-]*)\}")
+
+
+def round_down(n):
+    """2,250 -> 2,000. A figure that still reads true as the count grows."""
+    step = 100 if n < 1_000 else 500 if n < 10_000 else 1_000 if n < 100_000 else 10_000
+    return n // step * step
+
+
+def whole_number(text):
+    return int(re.sub(r"[^\d]", "", text) or "0")
+
+
+def placeholders(sections):
+    # The real count can dip week to week; the page holds at the floor.
+    followers = max(
+        whole_number(field(sections, "numbers", "followers")),
+        whole_number(field(sections, "numbers", "followers-minimum")),
+    )
+    return {
+        "followers": f"{followers:,}",
+        "followers-over": f"{round_down(followers):,}",
+        "engagement": field(sections, "numbers", "hero-value", "0"),
+        "partners": str(len(items(sections, "partners"))),
+    }
+
+
+def fill(sections, values):
+    """Swap every known `{name}` in fields and list rows for its value."""
+    def sub(text):
+        return PLACEHOLDER.sub(lambda m: values.get(m.group(1), m.group(0)), text)
+
+    for section in sections.values():
+        section["fields"] = {k: sub(v) for k, v in section["fields"].items()}
+        section["items"] = [[sub(c) for c in row] for row in section["items"]]
+    return sections
+
+
 def esc(value):
     return html.escape(str(value), quote=False)
 
@@ -339,13 +383,15 @@ def build():
         sys.exit(f"missing {TEMPLATE.name}")
 
     s = parse(CONTENT.read_text(encoding="utf-8"))
+    s = fill(s, placeholders(s))
 
     owner = field(s, "meta", "owner", "Denzel")
     name = field(s, "header", "name", owner)
     stack_rows = items(s, "hero")
     stack_plain = " ".join(col(r, 0) for r in stack_rows)
     male = field(s, "numbers", "male", "50")
-    female = field(s, "numbers", "female", "50")
+    # Female is whatever male leaves, unless content.md sets it explicitly.
+    female = field(s, "numbers", "female") or f"{100 - float(male):g}"
     photo = field(s, "story", "photo", "assets/denzel.jpg")
 
     initials = field(s, "story", "initials") or "".join(

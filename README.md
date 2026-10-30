@@ -56,6 +56,80 @@ default so it never competes with the page. Set it to `off` once he has
 picked, and put his choice in `palette`. `?compare=1` on the URL does the
 same thing without editing anything.
 
+## Editing without code
+
+Double-click **`Edit Website.bat`** (Windows) or **`Edit Website.command`**
+(Mac). A page opens in the browser with the follower count, engagement
+rate, audience split, stat boxes, reels, brands and contact details as plain
+form fields. Reels can be added by pasting their Instagram link, given a
+caption and pillar, reordered or removed. Brands can be added, removed, reordered and given a logo by
+uploading any PNG, JPG or SVG; the page converts it to the same silhouette
+format the rest of the logo wall uses. **Save & preview** shows the real
+site with the change, and **Publish** pushes it to GitHub, which puts it
+live a minute or two later.
+
+Needs Python 3 and Git on the computer, and a GitHub login with push
+access to this repo (Git asks for it the first time). The editor pulls the
+latest version from GitHub when it opens, so it never edits a stale copy.
+It only listens on this computer.
+
+### From a phone
+
+The same editor is published with the site at
+**https://gitdenzelhub.github.io/denzel/edit/**. Bookmark it or add it to
+the home screen. Nothing needs installing; it saves straight to GitHub.
+
+The first time, it asks to connect: sign in to GitHub as `gitdenzelhub`,
+tap **Create a key on GitHub**, give the key access to the `denzel`
+repository with **Contents: Read and write**, and paste it in. The key is
+kept in that phone's browser only. Keys expire after a year; when one
+does, the editor says so and asks for a new one.
+
+On the phone there is no Save & preview and no "Get from Instagram"
+button (the weekly update covers that). Publish commits `content.md` and
+any new logos in one go, and the site redeploys a minute or two later.
+Each save is applied to the newest version on GitHub, so it never undoes
+the weekly follower update or a change made from another device.
+
+The page itself is `edit/index.html`. It does all the reading and writing
+of `content.md` in the browser; `tools/editor.py` only serves it locally
+and handles Git on a computer.
+
+## Updating the follower count
+
+Double-click **`Update Followers.bat`** / **`Update Followers.command`**, or:
+
+```bash
+python tools/update_followers.py            # read Instagram, update, publish
+python tools/update_followers.py 2250       # use this number instead
+python tools/update_followers.py --no-push  # update content.md only
+```
+
+It reads the count from the public profile page at instagram.com/dnzlszn.
+Instagram sometimes answers with a login page instead, so for a reliable
+read, save an Instagram API access token (from a Meta developer app linked
+to @dnzlszn as a professional account) in `instagram-token.txt` next to
+`content.md`. That file is gitignored. If neither works, the script asks
+for the number.
+
+The page never shows fewer followers than `followers-minimum` in
+`content.md` (2,250), so a week where the real count dips leaves the
+number on the site where it is.
+
+### Weekly automatic update
+
+`.github/workflows/update-followers.yml` runs the same script every Monday
+at 10:00 Dubai time, commits the new count if it changed, and redeploys.
+It can also be started by hand from the repo's Actions tab ("Weekly
+follower count" → Run workflow).
+
+Instagram often refuses requests from GitHub's servers. When it does, that
+week is skipped and the count stays as it was. For a reliable weekly read,
+add the Instagram API token as a repository secret named `IG_ACCESS_TOKEN`
+(Settings → Secrets and variables → Actions). GitHub also pauses scheduled
+workflows after 60 days with no commits to the repo; re-enable it from
+the Actions tab if that happens.
+
 ## Editing content
 
 Open `content.md`, change what you need, save, refresh the browser.
@@ -63,6 +137,16 @@ Open `content.md`, change what you need, save, refresh the browser.
 - `key: value` sets a single field.
 - `- a | b | c` adds a row to a list. Columns are documented above each list.
 - Any other line is ignored, so notes are safe to leave in the file.
+
+Figures that appear in more than one place are written once and dropped
+in elsewhere as placeholders, so one edit updates the whole page:
+
+| Placeholder | Comes from | Example |
+|---|---|---|
+| `{followers}` | `followers:` under Numbers | 2,250 |
+| `{followers-over}` | the same, rounded down | 2,000 ("over 2,000 people") |
+| `{engagement}` | `hero-value:` under Numbers | 5.75 |
+| `{partners}` | the number of rows under Partners | 8 |
 
 Several things are derived automatically so they cannot drift out of sync:
 
@@ -76,7 +160,7 @@ Several things are derived automatically so they cannot drift out of sync:
 | `compare:` | whether the palette switcher ships with the page |
 | `site-url:` | the absolute URL of the Open Graph share image |
 | `+971 50 917 9493` | the `tel:` and `wa.me` links |
-| `male:` / `female:` | split-bar width and its screen-reader label |
+| `male:` | `female` (100 minus male), split-bar width and its screen-reader label |
 
 ## Running it
 

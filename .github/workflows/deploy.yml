@@ -36,6 +36,8 @@ jobs:
           mkdir -p _site
           cp index.html styles.css main.js _site/
           cp -r assets _site/
+          # The editor, at <site>/edit/, for updating the site from a phone.
+          cp -r edit _site/
 
       - uses: actions/configure-pages@v5
 

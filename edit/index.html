@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Website editor</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f4f3ef">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Edit site">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --bg: #f4f3ef;
+    --card: #ffffff;
+    --ink: #14161c;
+    --muted: #6b6f78;
+    --line: #e2e0d9;
+    --accent: #d7262f;
+    --ok: #1d7a46;
+    --night: #0a0e17;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding-bottom: 120px;
+  }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 16px; }
+  h1 { font-size: 30px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .lede { color: var(--muted); margin: 0 0 28px; }
+  .lede a { color: inherit; }
+
+  section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  section > h2 { font-size: 20px; margin: 0 0 4px; }
+  section > p.hint { color: var(--muted); margin: 0 0 18px; font-size: 15px; }
+
+  label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+  .help { font-weight: 400; color: var(--muted); }
+  input[type=text], input[type=number], input[type=email], input[type=url] {
+    width: 100%;
+    font: inherit;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+  }
+  input:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+  input[readonly] { background: var(--bg); color: var(--muted); }
+
+  .row { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .field { margin-bottom: 16px; }
+  .inline { display: flex; gap: 8px; }
+  .inline input { flex: 1; min-width: 0; }
+  .suffix { display: flex; align-items: center; gap: 8px; }
+  .suffix span { color: var(--muted); }
+
+  button {
+    font: inherit;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  button:hover { border-color: var(--ink); }
+  button:disabled { opacity: 0.5; cursor: wait; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.dark { background: var(--ink); border-color: var(--ink); color: #fff; }
+  button.small { padding: 6px 10px; font-size: 14px; }
+  a.small {
+    display: inline-flex; align-items: center; padding: 6px 10px; font-size: 14px;
+    border: 1px solid var(--line); border-radius: 10px; color: var(--ink); text-decoration: none;
+  }
+  a.small:hover { border-color: var(--ink); }
+  a.small[hidden] { display: none; }
+  button.danger { color: var(--accent); }
+
+  /* Audience split */
+  .split { display: flex; height: 14px; border-radius: 99px; overflow: hidden; margin: 12px 0 8px; }
+  .split .m { background: var(--ink); }
+  .split .f { background: var(--accent); flex: 1; }
+  .split-key { display: flex; gap: 20px; color: var(--muted); font-size: 14px; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+
+  /* Stat boxes */
+  .stats { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .stat { border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .stat .auto { font-size: 13px; color: var(--ok); margin: -8px 0 12px; }
+
+  /* Reels */
+  .reels { display: grid; gap: 12px; }
+  .reel {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr 2fr auto;
+    gap: 10px;
+    align-items: end;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .reel.is-new { border-color: var(--accent); }
+  .reel .field { margin: 0; }
+  .reel select {
+    width: 100%; font: inherit; padding: 10px 12px;
+    border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink);
+  }
+  .reel .brand-actions { margin: 0; flex-wrap: nowrap; }
+  @media (max-width: 720px) { .reel { grid-template-columns: 1fr; } }
+
+  /* Brands */
+  .brands { display: grid; gap: 14px; }
+  .brand {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 16px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .brand.is-new { border-color: var(--accent); }
+  .logo-tile {
+    background: var(--night);
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    min-height: 110px;
+    text-align: center;
+  }
+  /* Same treatment as the live site on the dark scheme. */
+  .logo-tile img { max-width: 100%; max-height: 70px; filter: invert(1); }
+  .logo-tile .word { color: #fff; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+  .brand-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .brand .field { margin-bottom: 10px; }
+  @media (max-width: 560px) { .brand { grid-template-columns: 1fr; } }
+
+  /* Bottom bar */
+  .bar {
+    position: fixed;
+    inset: auto 0 0 0;
+    background: rgba(255,255,255,0.96);
+    border-top: 1px solid var(--line);
+    padding: 14px 16px;
+    backdrop-filter: blur(6px);
+  }
+  .bar-inner { max-width: 860px; margin: 0 auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .status { flex: 1; min-width: 200px; font-size: 15px; white-space: pre-line; }
+  .status.error { color: var(--accent); }
+  .status.ok { color: var(--ok); }
+  .status a { color: inherit; }
+
+  /* Connecting a phone */
+  .steps { padding-left: 20px; margin: 0 0 18px; }
+  .steps li { margin-bottom: 8px; }
+  a.button {
+    display: inline-block; font-weight: 600; text-decoration: none;
+    background: var(--ink); color: #fff; border-radius: 10px; padding: 10px 14px; margin-bottom: 18px;
+  }
+  .linklike { background: none; border: 0; padding: 0; color: var(--muted); text-decoration: underline; font-weight: 400; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Website editor</h1>
+  <p class="lede">Change anything below, then press <strong>Publish</strong>. The live site updates a minute or two later.
+    <span id="live"></span> <button id="disconnect" type="button" class="linklike" hidden>Disconnect this device</button></p>
+
+  <section id="connect" hidden>
+    <h2>Connect this device</h2>
+    <p class="hint">One-time setup. It gives this browser a key that lets it publish to the site. The key stays on this device only.</p>
+    <ol class="steps">
+      <li>Sign in to GitHub as <strong>gitdenzelhub</strong>, then tap the button below.</li>
+      <li>Under <strong>Repository access</strong>, choose <strong>Only select repositories</strong> and pick <strong>denzel</strong>.</li>
+      <li>Under <strong>Permissions</strong>, set <strong>Contents</strong> to <strong>Read and write</strong>.</li>
+      <li>Tap <strong>Generate token</strong>, copy it, and paste it here.</li>
+    </ol>
+    <a class="button" target="_blank" rel="noopener"
+       href="https://github.com/settings/personal-access-tokens/new?name=Website%20editor&amp;description=Lets%20the%20website%20editor%20publish%20changes&amp;target_name=gitdenzelhub&amp;expires_in=365&amp;contents=write">Create a key on GitHub</a>
+    <div class="field">
+      <label for="token">Paste the key</label>
+      <div class="inline">
+        <input id="token" type="password" autocomplete="off" placeholder="github_pat_...">
+        <button id="connect-btn" type="button" class="primary">Connect</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="form" hidden>
+  <section>
+    <h2>Instagram</h2>
+    <p class="hint">Typed once here, used everywhere on the site that mentions them. The count also updates itself from Instagram every Monday.</p>
+    <div class="row">
+      <div class="field">
+        <label for="followers">Followers</label>
+        <div class="inline">
+          <input id="followers" type="text" inputmode="numeric">
+          <button id="fetch" type="button">Get from Instagram</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="minimum">Never show fewer than</label>
+        <input id="minimum" type="text" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label for="engagement">Engagement rate</label>
+        <div class="suffix"><input id="engagement" type="text" inputmode="decimal"><span>%</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Audience split</h2>
+    <p class="hint">Set the male share. Female is worked out for you.</p>
+    <div class="row">
+      <div class="field">
+        <label for="male">Male</label>
+        <div class="suffix"><input id="male" type="number" min="0" max="100" step="0.1"><span>%</span></div>
+      </div>
+      <div class="field">
+        <label for="female">Female <span class="help">(automatic)</span></label>
+        <div class="suffix"><input id="female" type="text" readonly><span>%</span></div>
+      </div>
+    </div>
+    <input id="male-range" type="range" min="0" max="100" step="0.1" aria-label="Male share">
+    <div class="split" aria-hidden="true"><span class="m" id="split-m"></span><span class="f"></span></div>
+  </section>
+
+  <section>
+    <h2>Stat boxes</h2>
+    <p class="hint">The four boxes under the engagement rate.</p>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <section>
+    <h2>Reels</h2>
+    <p class="hint">The "Selected work" list. Paste the reel's link from Instagram (Share → Copy link).</p>
+    <div class="reels" id="reels"></div>
+    <p><button id="add-reel" type="button" class="dark">+ Add a reel</button></p>
+  </section>
+
+  <section>
+    <h2>Brands I have worked with</h2>
+    <p class="hint">Upload any logo file (PNG, JPG or SVG). It is converted to match the site automatically. No logo? The brand name is shown in bold letters instead.</p>
+    <div class="brands" id="brands"></div>
+    <p><button id="add-brand" type="button" class="dark">+ Add a brand</button></p>
+  </section>
+
+  <section>
+    <h2>Contact</h2>
+    <div class="row">
+      <div class="field"><label for="email">Email</label><input id="email" type="email"></div>
+      <div class="field"><label for="phone">Phone <span class="help">(as shown)</span></label><input id="phone" type="text"></div>
+      <div class="field"><label for="whatsapp">WhatsApp number</label><input id="whatsapp" type="text"></div>
+    </div>
+  </section>
+  </div>
+</main>
+
+<div class="bar">
+  <div class="bar-inner">
+    <p class="status" id="status" role="status">Loading...</p>
+    <button id="preview" type="button">Save &amp; preview</button>
+    <button id="publish" type="button" class="primary">Publish</button>
+  </div>
+</div>
+
+<template id="stat-tpl">
+  <div class="stat">
+    <div class="field"><label>Big number</label><input type="text" data-k="value"></div>
+    <p class="auto" hidden>Filled in automatically</p>
+    <div class="field"><label>Title</label><input type="text" data-k="label"></div>
+    <div class="field" style="margin:0"><label>Small text</label><input type="text" data-k="note"></div>
+  </div>
+</template>
+
+<template id="reel-tpl">
+  <div class="reel">
+    <div class="field"><label>Caption</label><input type="text" data-k="title"></div>
+    <div class="field"><label>Pillar</label><select data-k="pillar"></select></div>
+    <div class="field"><label>Instagram link</label><input type="url" data-k="url" placeholder="https://www.instagram.com/reel/..."></div>
+    <div class="brand-actions">
+      <a class="small" data-act="open" target="_blank" title="Watch">▶</a>
+      <button type="button" class="small" data-act="up" aria-label="Move up">↑</button>
+      <button type="button" class="small" data-act="down" aria-label="Move down">↓</button>
+      <button type="button" class="small danger" data-act="remove">Remove</button>
+    </div>
+  </div>
+</template>
+
+<template id="brand-tpl">
+  <div class="brand">
+    <div>
+      <div class="logo-tile"></div>
+      <input type="file" accept="image/*" hidden>
+    </div>
+    <div>
+      <div class="field"><label>Brand name</label><input type="text" data-k="name"></div>
+      <div class="field"><label>Website <span class="help">(optional)</span></label><input type="url" data-k="url" placeholder="https://"></div>
+      <div class="brand-actions">
+        <button type="button" class="small" data-act="logo">Upload logo</button>
+        <button type="button" class="small" data-act="up" aria-label="Move up">↑</button>
+        <button type="button" class="small" data-act="down" aria-label="Move down">↓</button>
+        <button type="button" class="small danger" data-act="remove">Remove</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+const $ = (sel) => document.querySelector(sel);
+let state = null;
+let dirty = false;
+
+function setStatus(text, kind) {
+  const el = $("#status");
+  el.className = "status" + (kind ? " " + kind : "");
+  // Turn the live-site link into something clickable.
+  el.innerHTML = "";
+  text.split(/(https?:\/\/\S+)/).forEach((part) => {
+    if (/^https?:\/\//.test(part)) {
+      const a = document.createElement("a");
+      a.href = part; a.target = "_blank"; a.textContent = part;
+      el.appendChild(a);
+    } else {
+      el.appendChild(document.createTextNode(part));
+    }
+  });
+}
+
+function markDirty() {
+  dirty = true;
+  setStatus("You have unpublished changes.");
+}
+
+// ── Rendering ──────────────────────────────────────────────────────────
+
+function render(data) {
+  state = data;
+  $("#followers").value = Number(data.followers.replace(/,/g, "")).toLocaleString("en-US");
+  $("#minimum").value = data.followersMinimum
+    ? Number(data.followersMinimum.replace(/,/g, "")).toLocaleString("en-US") : "";
+  $("#engagement").value = data.engagement;
+  setMale(data.male);
+  $("#email").value = data.contact.email;
+  $("#phone").value = data.contact.phone;
+  $("#whatsapp").value = data.contact.whatsapp;
+  if (data.liveUrl) {
+    $("#live").innerHTML = "";
+    const a = document.createElement("a");
+    a.href = data.liveUrl; a.target = "_blank"; a.textContent = "Open the live site";
+    $("#live").appendChild(a);
+  }
+  renderStats();
+  renderReels();
+  renderBrands();
+}
+
+function shownFollowers() {
+  const n = (s) => parseInt(String(s).replace(/[^\d]/g, ""), 10) || 0;
+  return Math.max(n($("#followers").value), n($("#minimum").value)).toLocaleString("en-US");
+}
+
+function setMale(value) {
+  const m = Math.min(100, Math.max(0, parseFloat(value) || 0));
+  $("#male").value = value;
+  $("#male-range").value = m;
+  $("#female").value = +(100 - m).toFixed(2);
+  $("#split-m").style.width = m + "%";
+}
+
+function renderStats() {
+  const wrap = $("#stats");
+  wrap.innerHTML = "";
+  state.stats.forEach((stat) => {
+    const el = $("#stat-tpl").content.firstElementChild.cloneNode(true);
+    el.querySelectorAll("[data-k]").forEach((input) => {
+      input.value = stat[input.dataset.k];
+      input.addEventListener("input", () => { stat[input.dataset.k] = input.value; markDirty(); });
+    });
+    if (stat.auto) {
+      const v = el.querySelector('[data-k="value"]');
+      v.readOnly = true;
+      v.value = stat.value.includes("{followers}") ? shownFollowers()
+        : stat.value.includes("{partners}") ? state.brands.filter((b) => b.name.trim()).length
+        : stat.value;
+      el.querySelector(".auto").hidden = false;
+    }
+    wrap.appendChild(el);
+  });
+}
+
+function logoTile(tile, brand) {
+  tile.innerHTML = "";
+  const src = brand.upload ? brand.upload.silhouette : (brand.logo ? "../assets/logos/" + encodeURIComponent(brand.logo) : "");
+  const word = () => {
+    const w = document.createElement("span");
+    w.className = "word";
+    w.textContent = brand.name || "Logo";
+    tile.replaceChildren(w);
+  };
+  if (!src) return word();
+  const img = new Image();
+  img.alt = brand.name;
+  img.onerror = word;
+  img.src = src;
+  tile.appendChild(img);
+}
+
+function renderBrands() {
+  const wrap = $("#brands");
+  wrap.innerHTML = "";
+  state.brands.forEach((brand, i) => {
+    const el = $("#brand-tpl").content.firstElementChild.cloneNode(true);
+    if (brand.isNew) el.classList.add("is-new");
+    const tile = el.querySelector(".logo-tile");
+    const file = el.querySelector("input[type=file]");
+    logoTile(tile, brand);
+
+    el.querySelectorAll("[data-k]").forEach((input) => {
+      input.value = brand[input.dataset.k];
+      input.addEventListener("input", () => {
+        brand[input.dataset.k] = input.value;
+        if (input.dataset.k === "name") {
+          if (!brand.logo && !brand.upload) logoTile(tile, brand);
+          renderStats();
+        }
+        markDirty();
+      });
+    });
+
+    el.querySelector('[data-act="logo"]').addEventListener("click", () => file.click());
+    file.addEventListener("change", async () => {
+      if (!file.files[0]) return;
+      try {
+        brand.upload = await prepareLogo(file.files[0]);
+        logoTile(tile, brand);
+        markDirty();
+      } catch (err) {
+        setStatus(err.message, "error");
+      }
+    });
+    el.querySelector('[data-act="up"]').addEventListener("click", () => move(state.brands, i, -1, renderBrands));
+    el.querySelector('[data-act="down"]').addEventListener("click", () => move(state.brands, i, 1, renderBrands));
+    el.querySelector('[data-act="remove"]').addEventListener("click", () => {
+      if (!confirm(`Remove ${brand.name || "this brand"} from the site?`)) return;
+      state.brands.splice(i, 1);
+      renderBrands(); renderStats(); markDirty();
+    });
+    wrap.appendChild(el);
+  });
+}
+
+function move(list, i, step, rerender) {
+  const j = i + step;
+  if (j < 0 || j >= list.length) return;
+  [list[i], list[j]] = [list[j], list[i]];
+  rerender();
+  markDirty();
+}
+
+function renderReels() {
+  const wrap = $("#reels");
+  wrap.innerHTML = "";
+  state.reels.forEach((reel, i) => {
+    const el = $("#reel-tpl").content.firstElementChild.cloneNode(true);
+    if (reel.isNew) el.classList.add("is-new");
+    const select = el.querySelector("select");
+    const options = state.pillars.includes(reel.pillar) || !reel.pillar
+      ? state.pillars : [...state.pillars, reel.pillar];
+    options.forEach((name) => select.add(new Option(name, name)));
+    const watch = el.querySelector('[data-act="open"]');
+    const setWatch = () => { watch.href = reel.url || "#"; watch.hidden = !reel.url; };
+    setWatch();
+
+    el.querySelectorAll("[data-k]").forEach((input) => {
+      input.value = reel[input.dataset.k];
+      const update = () => { reel[input.dataset.k] = input.value; setWatch(); markDirty(); };
+      input.addEventListener("input", update);
+      input.addEventListener("change", update);
+    });
+    el.querySelector('[data-act="up"]').addEventListener("click", () => move(state.reels, i, -1, renderReels));
+    el.querySelector('[data-act="down"]').addEventListener("click", () => move(state.reels, i, 1, renderReels));
+    el.querySelector('[data-act="remove"]').addEventListener("click", () => {
+      if (!confirm(`Remove "${reel.title || "this reel"}" from the site?`)) return;
+      state.reels.splice(i, 1);
+      renderReels(); markDirty();
+    });
+    wrap.appendChild(el);
+  });
+}
+
+// ── Logos ──────────────────────────────────────────────────────────────
+// Same idea as tools/normalize_logos.py: every logo becomes a black shape
+// on transparency, so one CSS rule shows it correctly on any colour scheme.
+
+const NOISE_FLOOR = 40, EDGE_SPAN = 90, PAD = 0.02, MAX_SIDE = 1600;
+
+function readFile(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(new Error("Could not read that file."));
+    r.readAsDataURL(file);
+  });
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("That file is not an image the browser can open. Try a PNG or JPG."));
+    img.src = src;
+  });
+}
+
+async function prepareLogo(file) {
+  const original = await readFile(file);
+  const img = await loadImage(original);
+  let w = img.naturalWidth || 1000, h = img.naturalHeight || 1000;
+  const scale = Math.min(1, MAX_SIDE / Math.max(w, h));
+  w = Math.round(w * scale); h = Math.round(h * scale);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0, w, h);
+  const data = ctx.getImageData(0, 0, w, h);
+  const px = data.data;
+
+  let clear = 0;
+  for (let i = 3; i < px.length; i += 4) if (px[i] === 0) clear++;
+  const useAlpha = clear / (w * h) > 0.05;
+  const [br, bg, bb] = [px[0], px[1], px[2]];
+
+  let minX = w, minY = h, maxX = -1, maxY = -1;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      let a;
+      if (useAlpha) {
+        a = px[i + 3];
+      } else {
+        const d = Math.hypot(px[i] - br, px[i + 1] - bg, px[i + 2] - bb);
+        const v = (d - NOISE_FLOOR) / EDGE_SPAN;
+        a = v <= 0 ? 0 : v >= 1 ? 255 : Math.round(v * 255);
+      }
+      px[i] = px[i + 1] = px[i + 2] = 0;
+      px[i + 3] = a;
+      if (a) {
+        if (x < minX) minX = x; if (x > maxX) maxX = x;
+        if (y < minY) minY = y; if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX < 0) throw new Error("Could not find a logo in that image. Try a version with a plain or transparent background.");
+  ctx.putImageData(data, 0, 0);
+
+  const padX = Math.round((maxX - minX) * PAD), padY = Math.round((maxY - minY) * PAD);
+  const x0 = Math.max(0, minX - padX), y0 = Math.max(0, minY - padY);
+  const x1 = Math.min(w, maxX + 1 + padX), y1 = Math.min(h, maxY + 1 + padY);
+  const out = document.createElement("canvas");
+  out.width = x1 - x0; out.height = y1 - y0;
+  out.getContext("2d").drawImage(canvas, x0, y0, out.width, out.height, 0, 0, out.width, out.height);
+
+  const ext = (file.name.split(".").pop() || "png").toLowerCase();
+  return { silhouette: out.toDataURL("image/png"), original, ext };
+}
+
+// ── content.md ─────────────────────────────────────────────────────────
+// The same reading rules as build.py, plus writers that change only the
+// lines they are asked to, so every note in content.md survives an edit.
+
+const FIELD = /^([a-z][a-z0-9-]*)\s*:\s*(.*)$/;
+const IMAGE_TYPES = ["png", "jpg", "jpeg", "webp", "gif", "svg"];
+
+function parse(text) {
+  const sections = {};
+  let current = null;
+  for (const raw of text.split("\n")) {
+    const line = raw.trim();
+    if (line.startsWith("## ")) {
+      current = line.slice(3).trim().toLowerCase();
+      sections[current] = { fields: {}, items: [] };
+      continue;
+    }
+    if (current === null || !line) continue;
+    if (line.startsWith("- ")) {
+      sections[current].items.push(line.slice(2).split("|").map((c) => c.trim()));
+      continue;
+    }
+    const m = FIELD.exec(line);
+    if (m) sections[current].fields[m[1]] = m[2].trim();
+  }
+  return sections;
+}
+
+const fieldOf = (s, section, key) => (s[section] && s[section].fields[key]) || "";
+const itemsOf = (s, section) => (s[section] && s[section].items) || [];
+const col = (row, i) => row[i] || "";
+
+function sectionBounds(lines, section) {
+  let start = -1;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line.startsWith("## ")) continue;
+    if (start >= 0) return [start, i];
+    if (line.slice(3).trim().toLowerCase() === section) start = i + 1;
+  }
+  if (start < 0) throw new Error(`content.md has no "## ${section}" section.`);
+  return [start, lines.length];
+}
+
+function setField(text, section, key, value) {
+  const lines = text.split("\n");
+  const [start, end] = sectionBounds(lines, section);
+  const pattern = new RegExp(`^${key.replace(/[-]/g, "\\-")}\\s*:`);
+  for (let i = start; i < end; i++) {
+    if (pattern.test(lines[i].trim())) {
+      lines[i] = `${key}: ${value}`;
+      return lines.join("\n");
+    }
+  }
+  // Missing from an older content.md: add it after the section's last line.
+  let last = end - 1;
+  while (last > start && !lines[last].trim()) last--;
+  lines.splice(last + 1, 0, `${key}: ${value}`);
+  return lines.join("\n");
+}
+
+function setRows(text, section, rows) {
+  const lines = text.split("\n");
+  const [start, end] = sectionBounds(lines, section);
+  let first = start;
+  while (first < end && !lines[first].startsWith("- ")) first++;
+  if (first === end) throw new Error(`content.md has no list under "## ${section}".`);
+  let last = first;
+  while (last < end && lines[last].startsWith("- ")) last++;
+
+  // Pad each column so the file stays readable by hand.
+  const widths = [];
+  rows.forEach((row) => row.forEach((cell, c) => (widths[c] = Math.max(widths[c] || 0, cell.length))));
+  const out = rows.map((row) =>
+    ("- " + row.map((cell, c) => (c < row.length - 1 ? cell.padEnd(widths[c]) : cell)).join(" | ")).trimEnd()
+  );
+  lines.splice(first, last - first, ...out);
+  return lines.join("\n");
+}
+
+// Keep typed text from breaking the `a | b | c` row format.
+const clean = (value) => String(value ?? "").replace(/\|/g, "/").split(/\s+/).filter(Boolean).join(" ");
+const slug = (name) =>
+  name.toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "brand";
+
+function number(value, name, low = 0, high = Infinity) {
+  const n = parseFloat(String(value ?? "").replace(/[,%\s]/g, ""));
+  if (!isFinite(n)) throw new Error(`${name} needs to be a number.`);
+  if (n < low || n > high) throw new Error(`${name} needs to be between ${low} and ${high}.`);
+  return n;
+}
+
+function toModel(text) {
+  const s = parse(text);
+  return {
+    followers: fieldOf(s, "numbers", "followers"),
+    followersMinimum: fieldOf(s, "numbers", "followers-minimum"),
+    engagement: fieldOf(s, "numbers", "hero-value"),
+    male: fieldOf(s, "numbers", "male"),
+    stats: itemsOf(s, "numbers").map((r) => ({
+      value: col(r, 0),
+      label: col(r, 1),
+      note: col(r, 2),
+      count: r.slice(3).some((c) => c.toLowerCase() === "count"),
+      // Rows built from a {placeholder} fill themselves in.
+      auto: col(r, 0).includes("{"),
+    })),
+    reels: itemsOf(s, "work").map((r) => ({ title: col(r, 0), pillar: col(r, 1), url: col(r, 2) })),
+    pillars: itemsOf(s, "pillars").map((r) => col(r, 1)),
+    brands: itemsOf(s, "partners").map((r) => ({ name: col(r, 0), logo: col(r, 1), url: col(r, 2) })),
+    contact: Object.fromEntries(["email", "phone", "whatsapp"].map((k) => [k, fieldOf(s, "contact", k)])),
+    liveUrl: fieldOf(s, "meta", "site-url"),
+  };
+}
+
+const withScheme = (url) => (url && !/^https?:\/\//i.test(url) ? "https://" + url : url);
+
+// Writes the form onto the latest content.md. Returns the new text, plus
+// any logo files to save alongside it.
+function applyForm(text, form) {
+  const followers = Math.trunc(number(form.followers, "Followers"));
+  const minimum = Math.trunc(number(form.followersMinimum || 0, "Minimum followers"));
+  const engagement = number(form.engagement, "Engagement rate", 0, 100);
+  const male = number(form.male, "Male audience", 0, 100);
+
+  text = setField(text, "numbers", "followers", String(followers));
+  text = setField(text, "numbers", "followers-minimum", String(minimum));
+  text = setField(text, "numbers", "hero-value", String(engagement));
+  text = setField(text, "numbers", "male", String(male));
+
+  // Stat rows keep their placeholder values and their `count` flag; only
+  // the wording the form exposes is replaced.
+  const original = toModel(text).stats;
+  text = setRows(text, "numbers", original.map((old, i) => {
+    const typed = form.stats[i] || old;
+    const row = [old.auto ? old.value : clean(typed.value), clean(typed.label), clean(typed.note)];
+    if (old.count) row.push("count");
+    return row;
+  }));
+
+  const reels = form.reels
+    .filter((r) => clean(r.url))
+    .map((r) => {
+      let url = withScheme(clean(r.url));
+      // Share links carry tracking parameters the reel does not need.
+      if (url.includes("instagram.com/")) url = url.split("?")[0];
+      return [clean(r.title) || "Reel", clean(r.pillar), url];
+    });
+  if (!reels.length) throw new Error("Keep at least one reel on the list.");
+  text = setRows(text, "work", reels);
+
+  const files = [];
+  const brands = [];
+  for (const brand of form.brands) {
+    const name = clean(brand.name);
+    if (!name) continue;
+    let logo = clean(brand.logo);
+    if (brand.upload) {
+      // The silhouette is what the site shows; the original is kept in
+      // logo-sources so tools/normalize_logos.py can regenerate it.
+      logo = slug(name) + ".png";
+      files.push({ path: `assets/logos/${logo}`, base64: brand.upload.silhouette.split(",")[1] });
+      if (IMAGE_TYPES.includes(brand.upload.ext)) {
+        files.push({ path: `logo-sources/${slug(name)}.${brand.upload.ext}`, base64: brand.upload.original.split(",")[1] });
+      }
+    }
+    brands.push([name, logo, withScheme(clean(brand.url))]);
+  }
+  if (!brands.length) throw new Error("Keep at least one brand on the list.");
+  text = setRows(text, "partners", brands);
+
+  for (const key of ["email", "phone", "whatsapp"]) {
+    text = setField(text, "contact", key, clean(form.contact[key]));
+  }
+  return { text, files };
+}
+
+function textToBase64(text) {
+  const bytes = new TextEncoder().encode(text);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(binary);
+}
+
+// ── Where changes go ───────────────────────────────────────────────────
+// On a computer running tools/editor.py, the local server writes the files
+// and pushes with Git. Anywhere else (a phone, the live site), the page
+// commits straight to GitHub with a key saved in this browser.
+
+const REPO = { owner: "gitdenzelhub", name: "denzel", branch: "main" };
+const TOKEN_KEY = "site-editor-github-token";
+const LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
+
+const store = {
+  get() { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch { return ""; } },
+  set(v) { try { localStorage.setItem(TOKEN_KEY, v); } catch {} },
+  clear() { try { localStorage.removeItem(TOKEN_KEY); } catch {} },
+};
+
+const localBackend = {
+  canPreview: true,
+  canFetchInstagram: true,
+  async read() {
+    const res = await fetch("/api/file?path=content.md", { cache: "no-store" });
+    if (!res.ok) throw new Error("Could not reach the editor. Is its window still open?");
+    return { text: (await res.text()).replace(/\r\n/g, "\n") };
+  },
+  async write(files, message, publish) {
+    const res = await fetch("/api/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Editor": "1" },
+      body: JSON.stringify({ files, message, publish }),
+    });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error || "Something went wrong.");
+    return body.message;
+  },
+};
+
+class GitHubError extends Error {
+  constructor(message, status) { super(message); this.status = status; }
+}
+
+const githubBackend = {
+  canPreview: false,
+  canFetchInstagram: false,
+  async api(path, { method = "GET", body, raw = false } = {}) {
+    let res;
+    try {
+      res = await fetch(`https://api.github.com/repos/${REPO.owner}/${REPO.name}${path}`, {
+        method,
+        cache: "no-store",
+        headers: {
+          Authorization: `Bearer ${store.get()}`,
+          Accept: raw ? "application/vnd.github.raw+json" : "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+          ...(body ? { "Content-Type": "application/json" } : {}),
+        },
+        body: body ? JSON.stringify(body) : undefined,
+      });
+    } catch {
+      throw new GitHubError("Could not reach GitHub. Check the internet connection and try again.", 0);
+    }
+    if (res.ok) return raw ? res.text() : res.json();
+    const detail = (await res.json().catch(() => ({}))).message || "";
+    if (res.status === 401) {
+      throw new GitHubError("GitHub did not accept the key. It may have expired. Tap \"Disconnect this device\" and connect again with a new one.", 401);
+    }
+    if (res.status === 403 || res.status === 404) {
+      throw new GitHubError("This key is not allowed to change the site. Make a new one with access to the denzel repository and Contents set to Read and write.", res.status);
+    }
+    throw new GitHubError(`GitHub said: ${detail || res.status}`, res.status);
+  },
+  async read() {
+    const ref = await this.api(`/git/ref/heads/${REPO.branch}`);
+    const base = ref.object.sha;
+    const text = await this.api(`/contents/content.md?ref=${base}`, { raw: true });
+    return { text: text.replace(/\r\n/g, "\n"), base };
+  },
+  async write(files, message, publish, base) {
+    // One commit for content.md and any logos, built on the commit the
+    // text was read from. If someone else published in between, the ref
+    // update is refused and save() starts over from the newer version.
+    const parent = await this.api(`/git/commits/${base}`);
+    const tree = [];
+    for (const f of files) {
+      const blob = await this.api("/git/blobs", { method: "POST", body: { content: f.base64, encoding: "base64" } });
+      tree.push({ path: f.path, mode: "100644", type: "blob", sha: blob.sha });
+    }
+    const newTree = await this.api("/git/trees", { method: "POST", body: { base_tree: parent.tree.sha, tree } });
+    const commit = await this.api("/git/commits", {
+      method: "POST",
+      body: { message, tree: newTree.sha, parents: [base] },
+    });
+    try {
+      await this.api(`/git/refs/heads/${REPO.branch}`, { method: "PATCH", body: { sha: commit.sha } });
+    } catch (err) {
+      if (err.status === 422) err.retry = true;
+      throw err;
+    }
+    return `Published. The live site updates in a minute or two: ${state.liveUrl || "the live site"}`;
+  },
+};
+
+const backend = LOCAL ? localBackend : githubBackend;
+
+function collect() {
+  return {
+    followers: $("#followers").value,
+    followersMinimum: $("#minimum").value,
+    engagement: $("#engagement").value,
+    male: $("#male").value,
+    stats: state.stats,
+    reels: state.reels,
+    brands: state.brands,
+    contact: { email: $("#email").value, phone: $("#phone").value, whatsapp: $("#whatsapp").value },
+  };
+}
+
+function busy(on) {
+  ["#preview", "#publish", "#fetch"].forEach((s) => ($(s).disabled = on));
+}
+
+async function save(publish) {
+  busy(true);
+  setStatus(publish ? "Publishing... this can take up to a minute." : "Saving...");
+  const previewTab = publish ? null : window.open("about:blank", "_blank");
+  try {
+    let message, result;
+    for (let attempt = 0; ; attempt++) {
+      // Always apply the form to the newest content.md, so a change made
+      // elsewhere in the meantime (the weekly follower update, another
+      // device) is kept rather than overwritten.
+      const latest = await backend.read();
+      result = applyForm(latest.text, collect());
+      const files = [{ path: "content.md", base64: textToBase64(result.text) }, ...result.files];
+      try {
+        message = await backend.write(files, "Update site from the editor", publish, latest.base);
+        break;
+      } catch (err) {
+        if (err.retry && attempt < 2) continue;
+        throw err;
+      }
+    }
+    render(toModel(result.text));
+    if (publish) dirty = false;
+    setStatus(message, publish ? "ok" : "");
+    if (previewTab) previewTab.location = "../index.html?static=1";
+  } catch (err) {
+    if (previewTab) previewTab.close();
+    setStatus(err.message, "error");
+  } finally {
+    busy(false);
+  }
+}
+
+$("#fetch").addEventListener("click", async () => {
+  busy(true);
+  setStatus("Checking Instagram...");
+  try {
+    const res = await fetch("/api/instagram");
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error);
+    $("#followers").value = body.followers.toLocaleString("en-US");
+    renderStats();
+    markDirty();
+    setStatus(`Instagram says ${body.followers.toLocaleString("en-US")} followers. Press Publish to put it live.`);
+  } catch (err) {
+    setStatus(`Instagram did not give the number this time (${err.message}). Type it in by hand instead.`, "error");
+  } finally {
+    busy(false);
+  }
+});
+
+$("#followers").addEventListener("input", () => { renderStats(); markDirty(); });
+$("#minimum").addEventListener("input", () => { renderStats(); markDirty(); });
+$("#engagement").addEventListener("input", markDirty);
+$("#male").addEventListener("input", (e) => { setMale(e.target.value); markDirty(); });
+$("#male-range").addEventListener("input", (e) => { setMale(e.target.value); markDirty(); });
+["#email", "#phone", "#whatsapp"].forEach((s) => $(s).addEventListener("input", markDirty));
+
+$("#add-brand").addEventListener("click", () => {
+  state.brands.push({ name: "", logo: "", url: "", isNew: true });
+  renderBrands(); renderStats(); markDirty();
+  const cards = document.querySelectorAll(".brand");
+  cards[cards.length - 1].querySelector('[data-k="name"]').focus();
+});
+
+$("#add-reel").addEventListener("click", () => {
+  state.reels.push({ title: "", pillar: state.pillars[0] || "", url: "", isNew: true });
+  renderReels(); markDirty();
+  const cards = document.querySelectorAll(".reel");
+  cards[cards.length - 1].querySelector('[data-k="title"]').focus();
+});
+
+$("#preview").addEventListener("click", () => save(false));
+$("#publish").addEventListener("click", () => save(true));
+
+window.addEventListener("beforeunload", (e) => {
+  if (dirty) { e.preventDefault(); e.returnValue = ""; }
+});
+
+// ── Start ──────────────────────────────────────────────────────────────
+
+async function start() {
+  $("#preview").hidden = true;
+  $("#publish").hidden = true;
+  $("#fetch").hidden = !backend.canFetchInstagram;
+
+  if (!LOCAL && !store.get()) {
+    $("#connect").hidden = false;
+    $("#form").hidden = true;
+    setStatus("Connect this device to start editing.");
+    return;
+  }
+
+  setStatus("Loading...");
+  try {
+    const { text } = await backend.read();
+    render(toModel(text));
+    $("#connect").hidden = true;
+    $("#form").hidden = false;
+    $("#disconnect").hidden = LOCAL;
+    $("#preview").hidden = !backend.canPreview;
+    $("#publish").hidden = false;
+    setStatus("Everything is up to date.");
+  } catch (err) {
+    setStatus(err.message, "error");
+    if (err.status === 401 || err.status === 403 || err.status === 404) {
+      store.clear();
+      $("#connect").hidden = false;
+      $("#form").hidden = true;
+    }
+  }
+}
+
+$("#connect-btn").addEventListener("click", () => {
+  const token = $("#token").value.trim();
+  if (!token) return setStatus("Paste the key from GitHub first.", "error");
+  store.set(token);
+  $("#token").value = "";
+  start();
+});
+
+$("#disconnect").addEventListener("click", () => {
+  if (dirty && !confirm("You have unpublished changes. Disconnect anyway?")) return;
+  store.clear();
+  dirty = false;
+  location.reload();
+});
+
+start();
+</script>
+</body>
+</html>
